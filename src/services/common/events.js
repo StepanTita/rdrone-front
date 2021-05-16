@@ -1,0 +1,1 @@
+export const SHOW_ALERT_EVENT = 'show-alert'
