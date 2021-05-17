@@ -1,0 +1,11 @@
+{
+  "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "center": {
+    "lat": 49.99,
+    "lon": 36.23
+  },
+  "zoom": 13,
+  "mapOptions": {
+    "zoomSnap": 0.5
+  }
+}

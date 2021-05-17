@@ -1,6 +1,6 @@
 <template>
-  <div class="alert">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+  <div class="alert" v-on:transitionend="removeAlert">
+    <span class="closebtn" v-on:click="removeAlert">&times;</span>
     <strong>Status: </strong> {{ text }}
   </div>
 </template>
@@ -9,7 +9,14 @@
 export default {
   name: 'Alert',
   props: {
-    text: String
+    text: String,
+  },
+  methods: {
+    removeAlert(e) {
+      if (this.text === '') {
+        e.target.style.display = 'none';
+      }
+    }
   }
 }
 </script>
@@ -21,7 +28,7 @@ export default {
   width: 70%;
 
   /* *MARGINS-PADDINGS* */
-  margin-top: 25px;
+  margin-top: 15%;
   padding: 20px;
 
   /* *POSITION* */
@@ -33,6 +40,7 @@ export default {
   /* *TRANSFORMS* */
   opacity: 0;
   transition: 0.5s;
+  display: none;
 
   /* *FONTS* */
   color: white;
@@ -41,6 +49,7 @@ export default {
 }
 
 .success, .warning, .critical, .info {
+  display: block;
   opacity: 0.83;
 }
 
