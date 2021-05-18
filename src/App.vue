@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <Alert v-bind:class="this.alertClass" v-bind:text="this.alertText"/>
+    <van-notify v-model="show" v-bind:type="alertType">
+      <van-icon name="bell" style="margin-right: 4px;" />
+      <span>{{ alertText }}</span>
+    </van-notify>
     <van-nav-bar
         title="RDrONE"
         left-text="Back"
@@ -19,7 +22,6 @@
 
 <script>
 import config from "@/assets/config.json"
-import Alert from "@/components/Alert"
 import {AlertService} from "@/services/alerts/alerts";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {EventBus} from "@/services/common/eventBus";
@@ -28,9 +30,10 @@ export default {
   data() {
     return {
       activeKey: 0,
-      alertClass: '',
+      alertType: '',
       alertText: '',
-      active: 0
+      active: 0,
+      show: true,
     }
   },
   created() {
@@ -41,20 +44,17 @@ export default {
   },
   methods: {
     onAlert(data) {
-      console.log("Emitted");
       this.setupAlert(data);
     },
     setupAlert(data) {
-      [this.alertClass, this.alertText] = this.alertService.ShowAlert(data);
+      [this.alertType, this.alertText] = this.alertService.ShowAlert(data);
       setTimeout(() => {
-        this.alertClass = '';
+        this.alertType = '';
         this.alertText = '';
+        this.show = false;
       }, config.alert_timeout)
     }
   },
-  components: {
-    Alert
-  }
 }
 </script>
 
@@ -68,8 +68,7 @@ export default {
   height: 100vh;
 }
 
-
 #nav a.router-link-exact-active {
-  color: #42b983;
+color: #42b983;
 }
 </style>

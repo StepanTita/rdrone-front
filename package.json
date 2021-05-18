@@ -13,6 +13,7 @@
     "register-service-worker": "^1.7.1",
     "vant": "^2.12.19",
     "vue": "^2.6.11",
+    "vue-i18n": "^8.24.4",
     "vue-router": "^3.2.0",
     "vue2-leaflet": "^2.7.0"
   },

@@ -10,6 +10,17 @@ export class CommentsQuerier {
     // TODO: add pagination
     async getComments(offset = 0, limit = -1) {
         let resp = await axios.get(config.api + endpoint).catch(err);
-        return new Response(resp.data.slice(0, 3), resp.status, resp.statusText);
+        return new Response(resp.data.reverse().slice(0, 10), resp.status, resp.statusText);
     };
+
+    // todo type conversion
+    sanitize(data) {
+        return data;
+    }
+
+    async createComment(data) {
+        data = this.sanitize(data);
+        let resp = await axios.post(config.api + endpoint, data).catch(err);
+        return new Response(resp.data, resp.status, resp.statusText);
+    }
 }

@@ -4,7 +4,8 @@
       <div class="row d-flex justify-content-center">
         <div class="col-md-8">
           <div class="headings d-flex justify-content-between align-items-center mb-3">
-            <h5>Unread comments(6)</h5>
+            <h5>Unread comments <span class="badge badge-info">{{ comments.length }}</span></h5>
+            <van-button icon="plus" color="#17a2b8" v-on:click="newComment"/>
           </div>
           <div v-for="comment in comments" v-bind:key="comment.id" class="card p-3 mt-2">
             <div v-if="comment.replyTo > comments.length">
@@ -18,7 +19,7 @@
                 <small>3 days ago</small>
               </div>
               <div class="action d-flex justify-content-between mt-2 align-items-center">
-                <div class="reply px-4"><small>Remove</small> <span class="dots"></span> <small>Reply</small> <span
+                <div class="reply px-4"><small>Remove</small> <span class="dots"></span> <small @click="createReply(comment)">Reply</small> <span
                     class="dots"></span> <small>Translate</small></div>
                 <div class="icons align-items-center"><i class="fa fa-user-plus text-muted"></i> <i
                     class="fa fa-star-o text-muted"></i> <i class="fa fa-star text-warning"></i> <i
@@ -37,7 +38,7 @@
                 <small>3 days ago</small>
               </div>
               <div class="action d-flex justify-content-between mt-2 align-items-center">
-                <div class="reply px-4"><small>Remove</small> <span class="dots"></span> <small>Reply</small> <span
+                <div class="reply px-4"><small>Remove</small> <span class="dots"></span> <small @click="createReply(comment)">Reply</small> <span
                     class="dots"></span> <small>Translate</small></div>
                 <div class="icons align-items-center"><i class="fa fa-user-plus text-muted"></i> <i
                     class="fa fa-star-o text-muted"></i> <i class="fa fa-star text-warning"></i> <i
@@ -48,14 +49,43 @@
         </div>
       </div>
     </div>
+    <create-comment v-bind:reply-to="replyTo" v-bind:show="overlay" v-on:end-create-comment="toggleCreateComment"/>
   </div>
 </template>
 
 <script>
+import CreateComment from "@/components/CreateComment";
+import {EventBus} from "@/services/common/eventBus";
+import {END_CREATE_COMMENT_EVENT} from "@/services/common/events";
+
 export default {
   name: 'CommentsList',
+  components: {CreateComment},
   props: {
     comments: Array
+  },
+  created() {
+    EventBus.$on(END_CREATE_COMMENT_EVENT, this.toggleCreateComment);
+  },
+  data() {
+    return {
+      overlay: false,
+      replyTo: {},
+    }
+  },
+  methods: {
+    newComment() {
+      this.replyTo = null;
+      this.toggleCreateComment()
+    },
+    toggleCreateComment() {
+      this.overlay = !this.overlay;
+    },
+    createReply(commentId) {
+      console.log(commentId.id);
+      this.replyTo = commentId;
+      this.toggleCreateComment();
+    }
   }
 }
 </script>
@@ -69,7 +99,8 @@ export default {
 .card {
   border: none;
   box-shadow: 5px 6px 6px 2px #e9ecef;
-  border-radius: 4px
+  border-radius: 4px;
+  transition: 1s;
 }
 
 .dots {

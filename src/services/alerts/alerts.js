@@ -1,5 +1,5 @@
 const [SUCCESS, SUCCESS_TEXT] = ["success", "Event successful"];
-const [CRITICAL, CRITICAL_TEXT] = ["critical", "Something Bad Happened"];
+const [DANGER, DANGER_TEXT] = ["danger", "Something Bad Happened"];
 
 export class AlertService {
     constructor() {}
@@ -7,7 +7,7 @@ export class AlertService {
         if (resp.StatusOK()) {
             return [SUCCESS, SUCCESS_TEXT];
         } else if (resp.StatusCritical()) {
-            return [CRITICAL, `${CRITICAL_TEXT}, Error: ${CRITICAL_TEXT}`];
+            return [DANGER, `${DANGER_TEXT}, Error: ${DANGER_TEXT}`];
         }
     }
 }

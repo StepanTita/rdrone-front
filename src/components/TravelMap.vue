@@ -14,7 +14,9 @@
     >
       <l-tile-layer :url="url"></l-tile-layer>
       <l-marker v-for="marker in markers" :lat-lng="marker">
-        <l-popup>Hello!</l-popup>
+        <l-popup>
+          Hello
+        </l-popup>
       </l-marker>
     </l-map>
     <!--    <div id="roadMap" style="height: 80%; width: 100%"></div>-->

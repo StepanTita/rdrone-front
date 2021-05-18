@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css';
 import Vant from 'vant';
 import 'vant/lib/index.css';
 import L from 'leaflet';
+import VueI18n from 'vue-i18n'
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -16,6 +17,11 @@ L.Icon.Default.mergeOptions({
 });
 
 Vue.use(Vant);
+Vue.use(VueI18n)
+
+const i18n = new VueI18n({
+  locale: 'en-US',
+})
 
 Vue.component('l-map', LMap);
 Vue.component('l-tile-layer', LTileLayer);
@@ -26,5 +32,6 @@ Vue.config.productionTip = false
 
 new Vue({
   router,
+  i18n,
   render: h => h(App)
 }).$mount('#app')

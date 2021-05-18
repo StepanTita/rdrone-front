@@ -8,7 +8,7 @@
 // @ is an alias to /src
 import CommentsList from "@/components/CommentsList"
 import {CommentsQuerier} from "@/services/comments/comments";
-import {SHOW_ALERT_EVENT} from "@/services/common/events";
+import {END_CREATE_COMMENT_EVENT, SHOW_ALERT_EVENT, UPDATE_COMMENTS_EVENT} from "@/services/common/events";
 import {EventBus} from "@/services/common/eventBus";
 
 export default {
@@ -18,13 +18,20 @@ export default {
       comments: []
     }
   },
+  created() {
+    EventBus.$on(UPDATE_COMMENTS_EVENT, this.updateComments)
+  },
   async mounted() {
     this.commentQuerier = new CommentsQuerier();
-    this.commentQuerier.getComments().then((resp) => {
-      console.log("emitting...");
-      EventBus.$emit(SHOW_ALERT_EVENT, resp);
-      this.comments = resp.data;
-    });
+    this.updateComments();
+  },
+  methods: {
+    updateComments() {
+      this.commentQuerier.getComments().then((resp) => {
+        EventBus.$emit(SHOW_ALERT_EVENT, resp);
+        this.comments = resp.data;
+      });
+    }
   },
   components: {
     CommentsList
