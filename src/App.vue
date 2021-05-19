@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <van-notify v-model="show" v-bind:type="alertType">
-      <van-icon name="bell" style="margin-right: 4px;" />
+    <van-notify v-model="showAlert" v-bind:type="alertType">
+      <van-icon name="bell" style="margin-right: 4px;"/>
       <span>{{ alertText }}</span>
     </van-notify>
     <van-nav-bar
@@ -10,13 +10,12 @@
         right-text="Next"
         left-arrow
     />
-    <van-tabbar v-model="active">
-      <van-tabbar-item icon="home-o"><router-link to="/">Home</router-link></van-tabbar-item>
-      <van-tabbar-item icon="search"><router-link to="/about">About</router-link></van-tabbar-item>
-      <van-tabbar-item icon="friends-o"><router-link to="/comments">Comments</router-link></van-tabbar-item>
-      <van-tabbar-item icon="setting-o">Tab</van-tabbar-item>
-    </van-tabbar>
     <router-view/>
+    <van-tabbar v-model="active">
+      <van-tabbar-item icon="home-o" @click="navigate('/')">Home</van-tabbar-item>
+      <van-tabbar-item icon="plus" @click="navigate('/about')">Add</van-tabbar-item>
+      <van-tabbar-item icon="setting-o">Settings</van-tabbar-item>
+    </van-tabbar>
   </div>
 </template>
 
@@ -25,35 +24,36 @@ import config from "@/assets/config.json"
 import {AlertService} from "@/services/alerts/alerts";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {EventBus} from "@/services/common/eventBus";
+
 export default {
   name: 'rdrone-app',
   data() {
     return {
-      activeKey: 0,
       alertType: '',
       alertText: '',
       active: 0,
-      show: true,
+      showAlert: false,
     }
   },
   created() {
-    EventBus.$on(SHOW_ALERT_EVENT, this.onAlert);
+    EventBus.$on(SHOW_ALERT_EVENT, this.setupAlert);
   },
   mounted() {
     this.alertService = new AlertService();
   },
   methods: {
-    onAlert(data) {
-      this.setupAlert(data);
-    },
     setupAlert(data) {
       [this.alertType, this.alertText] = this.alertService.ShowAlert(data);
+      this.showAlert = true;
       setTimeout(() => {
         this.alertType = '';
         this.alertText = '';
-        this.show = false;
+        this.showAlert = false;
       }, config.alert_timeout)
-    }
+    },
+    navigate(path) {
+      this.$router.push(path);
+    },
   },
 }
 </script>
@@ -69,6 +69,21 @@ export default {
 }
 
 #nav a.router-link-exact-active {
-color: #42b983;
+  color: #42b983;
 }
+
+.van-nav-bar.van-hairline--bottom {
+  height: 5% !important;
+  min-height: 44px;
+}
+
+.van-tabbar {
+  height: 10% !important;
+  min-height: 50px !important;
+}
+
+/*.van-hairline--top-bottom.van-tabbar.van-tabbar--fixed {*/
+/*  position: relative !important;*/
+/*}*/
+
 </style>

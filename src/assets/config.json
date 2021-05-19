@@ -1,4 +1,4 @@
 {
   "api" : "https://609d7de204bffa001792ee6e.mockapi.io/rdrone/",
-  "alert_timeout": 5000
+  "alert_timeout": 3000
 }

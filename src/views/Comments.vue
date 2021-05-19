@@ -19,6 +19,7 @@ export default {
     }
   },
   created() {
+    console.log(this.$route.params.occasion_id);
     EventBus.$on(UPDATE_COMMENTS_EVENT, this.updateComments)
   },
   async mounted() {

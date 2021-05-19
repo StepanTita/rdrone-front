@@ -1,4 +1,4 @@
-const [SUCCESS, SUCCESS_TEXT] = ["success", "Event successful"];
+const [SUCCESS, SUCCESS_TEXT] = ["success", "Load successful"];
 const [DANGER, DANGER_TEXT] = ["danger", "Something Bad Happened"];
 
 export class AlertService {
