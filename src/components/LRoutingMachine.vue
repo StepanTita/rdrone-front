@@ -6,8 +6,9 @@
 
 <script>
 import L from 'leaflet'
-import { IRouter, IGeocoder, LineOptions } from 'leaflet-routing-machine'
-import { findRealParent } from 'vue2-leaflet';
+import {IRouter, IGeocoder, LineOptions} from 'leaflet-routing-machine'
+import {findRealParent} from 'vue2-leaflet';
+
 const props = {
   visible: {
     type: Boolean,
@@ -90,9 +91,18 @@ export default {
   beforeDestroy() {
     return this.layer ? this.layer.remove() : null
   },
+  watch: {
+    waypoints: function (newVal, oldVal) { // watch it
+      console.log('Prop changed: ', newVal, ' | was: ', oldVal);
+      this.add();
+    }
+  },
   methods: {
-    add () {
+    add() {
       if (this.parentContainer._isMounted) {
+        if (this.layer !== null) {
+          this.layer.remove();
+        }
         const {
           waypoints,
           fitSelectedRoutes,
@@ -101,7 +111,8 @@ export default {
           routeDragInterval,
           waypointMode,
           useZoomParameter,
-          showAlternatives
+          showAlternatives,
+          altLineOptions
         } = this
         const options = {
           waypoints,
@@ -111,9 +122,10 @@ export default {
           routeDragInterval,
           waypointMode,
           useZoomParameter,
-          showAlternatives
+          showAlternatives,
+          altLineOptions
         }
-        const { mapObject } = this.parentContainer
+        const {mapObject} = this.parentContainer
         const routingLayer = L.Routing.control(options)
         routingLayer.addTo(mapObject)
         this.layer = routingLayer

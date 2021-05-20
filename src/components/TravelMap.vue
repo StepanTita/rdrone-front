@@ -12,6 +12,20 @@
         @click="addMarker"
         id="roadMap">
       <l-tile-layer :url="url"></l-tile-layer>
+      <l-control>
+        <van-button plain class="map-control create-occasion-control" v-on:click="showSearch=true"><van-icon size="20" name="fail" />
+<!--          <van-popover-->
+<!--              v-model="showSearch"-->
+<!--              trigger="click"-->
+<!--              placement="bottom-start"-->
+<!--          >-->
+<!--            <p>Hello</p>-->
+<!--          </van-popover>-->
+        </van-button>
+      </l-control>
+      <l-control>
+        <van-button plain class="map-control create-waypoints-control"><van-icon size="20" name="location-o" /></van-button>
+      </l-control>
       <l-marker v-for="occasion in occasions" :lat-lng="[occasion.lat, occasion.lng]">
         <l-popup>
           <div class="card">
@@ -36,13 +50,12 @@
             icon-url="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png"
         />
       </l-marker>
-<!--      <l-marker v-for="waypoint in waypoints" :lat-lng="[waypoint.lat, waypoint.lng]">-->
-<!--        <l-icon-->
-<!--            icon-url="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png"-->
-<!--        />-->
-<!--      </l-marker>-->
-      <l-routing-machine v-bind:waypoints="waypoints"/>
+      <l-routing-machine v-bind:waypoints="waypoints" v-bind:showAlternatives="showAlternatives"
+                         v-bind:alt-line-options="altLineOptions"/>
     </l-map>
+    <van-action-sheet v-model="showSearch" title="Add new occasion">
+      <search-destination v-bind:search-query="searchQuery"></search-destination>
+    </van-action-sheet>
   </div>
 </template>
 
@@ -53,7 +66,8 @@ import {latLng} from "leaflet";
 import {Locator} from "@/services/locator";
 import MapConfig from "@/assets/map-config.json"
 import LRoutingMachine from '@/components/LRoutingMachine'
-import {LMap, LTileLayer, LMarker, LPopup, LIcon} from 'vue2-leaflet';
+import {LMap, LTileLayer, LMarker, LPopup, LIcon, LControl} from 'vue2-leaflet';
+import SearchDestination from "@/components/SearchDestination";
 
 export default {
   name: 'Home',
@@ -68,11 +82,18 @@ export default {
       currentZoom: MapConfig.zoom,
       currentCenter: latLng(MapConfig.center.lat, MapConfig.center.lon),
       mapOptions: MapConfig.mapOptions,
+
+      showAlternatives: true,
+      altLineOptions: {
+        styles: [{color: 'black', opacity: 0.3, weight: 8}]
+      },
+
+      // search
+      searchQuery: '',
+      showSearch: false,
+
       newOccasion: null,
-      waypoints: [
-        // { lat: 38.7436056, lng: -9.2304153 },
-        // { lat: 38.7436056, lng: -0.131281 }
-      ]
+      waypoints: []
     };
   },
   methods: {
@@ -91,13 +112,11 @@ export default {
       this.$refs.roadMap.setCenter(this.center);
     },
     addMarker(e) {
-      // this.newOccasion = e.latlng;
       if (this.waypoints.length > 1) {
         this.waypoints = this.waypoints.slice(1,);
       }
       this.waypoints.push(e.latlng);
-      console.log(this.waypoints);
-    }
+    },
   },
   components: {
     LRoutingMachine,
@@ -105,7 +124,9 @@ export default {
     LTileLayer,
     LMarker,
     LPopup,
-    LIcon
+    LIcon,
+    LControl,
+    SearchDestination
   }
 }
 </script>
@@ -122,6 +143,22 @@ export default {
 .leaflet-container a {
   color: black !important;
   margin-right: 15px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.map-control {
+  z-index: 1000 !important;
+  border: none !important;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  width: 35px;
+  height: 33px;
+}
+
+.create-waypoints-control {
+  color: darkblue;
+}
+
+.create-occasion-control {
+  color: darkred;
 }
 </style>
