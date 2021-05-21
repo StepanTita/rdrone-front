@@ -1,32 +1,27 @@
-import Vue from 'vue'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
-import 'leaflet/dist/leaflet.css';
+import Vue from 'vue';
+import App from './App.vue';
+import './registerServiceWorker';
+import router from './router';
 import Vant from 'vant';
 import 'vant/lib/index.css';
-import L from 'leaflet';
-import VueMeta from 'vue-meta'
-
-delete L.Icon.Default.prototype._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
-
-Vue.use(Vant);
-Vue.use(VueMeta)
-
+import * as VueGoogleMaps from 'vue2-google-maps';
 import {Locale} from 'vant';
 import enUS from 'vant/es/locale/lang/en-US';
+import config from '@/assets/config.json';
+
+Vue.use(Vant);
+Vue.use(VueGoogleMaps, {
+    load: {
+        key: config.google_api_key,
+        libraries: 'places',
+    },
+});
 
 Locale.use('en-US', enUS);
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 new Vue({
     router,
     render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');

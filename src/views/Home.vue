@@ -1,12 +1,12 @@
 <template>
   <div class="home">
-    <travel-map v-bind:occasions="occasions"/>
+    <Map v-bind:occasions="occasions"/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import TravelMap from "@/components/TravelMap";
+import Map from "@/components/Map";
 import {EventBus} from "@/services/common/eventBus";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {OccasionsQuerier} from "@/services/occasions/occasions";
@@ -41,13 +41,13 @@ export default {
     }
   },
   components: {
-    TravelMap
+    Map
   }
 }
 </script>
 
-<style>
+<style scoped>
 .home {
-  height: 85%;
+  height: 85% !important;
 }
 </style>

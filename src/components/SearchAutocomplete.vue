@@ -1,48 +1,40 @@
 <template>
   <div>
-    <input type="text" v-model="location">
-    <ul>
-      <li v-for="(result, i) in searchResults" :key="i">
-        {{ result }}
-      </li>
-    </ul>
+    <van-action-sheet v-model="showActionSheet" title="Search">
+      <div class="search-container">
+        <GmapAutocomplete
+            @place_changed='setPlace'
+        />
+        <button @click='addMarker'>Add</button>
+      </div>
+    </van-action-sheet>
   </div>
 </template>
 
 <script>
-import config from "@/assets/config.json";
-import {encodeQueryData} from "@/services/common/encoding";
+import {ADD_MARKER_EVENT, SET_PLACE_EVENT} from "@/services/common/events";
 
 export default {
-  data: () => ({
-    location: '',
-    searchResults: [],
-    service: null // will reveal this later 🕵️
-  }),
-  mounted() {
-    this.MapsInit();
+  Name: 'SearchAutocomplete',
+  emits: ['select-location', 'set-place'],
+  data() {
+    return {
+      showActionSheet: true,
+    };
   },
   methods: {
-    MapsInit() {
-      this.service = new window.google.maps.places.AutocompleteService();
+    setPlace(e) {
+      this.$emit(SET_PLACE_EVENT, e);
     },
-    displaySuggestions(predictions, status) {
-      if (status !== window.google.maps.places.PlacesServiceStatus.OK) {
-        this.searchResults = [];
-        return;
-      }
-      this.searchResults = predictions.map(prediction => prediction.description);
-    }
-  },
-  watch: {
-    location(newValue) {
-      if (newValue) {
-        this.service.getPlacePredictions({
-          input: this.location,
-          types: ['(regions)'],
-        }, this.displaySuggestions);
-      }
+    addMarker(e) {
+      this.$emit(ADD_MARKER_EVENT, e);
     }
   }
 };
 </script>
+
+<style scoped>
+.search-container {
+  height: 500px;
+}
+</style>
