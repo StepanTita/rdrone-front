@@ -13,18 +13,27 @@
         id="roadMap">
       <l-tile-layer :url="url"></l-tile-layer>
       <l-control>
-        <van-button plain class="map-control create-occasion-control" v-on:click="showSearch=true"><van-icon size="20" name="fail" />
-<!--          <van-popover-->
-<!--              v-model="showSearch"-->
-<!--              trigger="click"-->
-<!--              placement="bottom-start"-->
-<!--          >-->
-<!--            <p>Hello</p>-->
-<!--          </van-popover>-->
+        <van-button plain class="map-control search-control" v-on:click="showSearch=true">
+          <van-icon size="20" name="search"/>
+          <!--          <van-popover-->
+          <!--              v-model="showSearch"-->
+          <!--              trigger="click"-->
+          <!--              placement="bottom-start"-->
+          <!--          >-->
+          <!--            <p>Hello</p>-->
+          <!--          </van-popover>-->
         </van-button>
       </l-control>
       <l-control>
-        <van-button plain class="map-control create-waypoints-control"><van-icon size="20" name="location-o" /></van-button>
+        <van-button plain class="map-control create-occasion-control" v-on:click="changeMode('occasions')">
+          <van-icon size="20" name="fail"/>
+
+        </van-button>
+      </l-control>
+      <l-control>
+        <van-button plain class="map-control create-waypoints-control" v-on:click="changeMode('waypoints')">
+          <van-icon size="20" name="location-o"/>
+        </van-button>
       </l-control>
       <l-marker v-for="occasion in occasions" :lat-lng="[occasion.lat, occasion.lng]">
         <l-popup>
@@ -64,10 +73,12 @@
 
 import {latLng} from "leaflet";
 import {Locator} from "@/services/locator";
-import MapConfig from "@/assets/map-config.json"
-import LRoutingMachine from '@/components/LRoutingMachine'
+import MapConfig from "@/assets/map-config.json";
+import LRoutingMachine from '@/components/LRoutingMachine';
 import {LMap, LTileLayer, LMarker, LPopup, LIcon, LControl} from 'vue2-leaflet';
 import SearchDestination from "@/components/SearchDestination";
+import * as Mode from "@/services/common/mode";
+import {Toast} from "vant";
 
 export default {
   name: 'Home',
@@ -76,6 +87,7 @@ export default {
   },
   data() {
     return {
+      // map
       url: MapConfig.url,
       zoom: MapConfig.zoom,
       center: latLng(MapConfig.center.lat, MapConfig.center.lon),
@@ -83,6 +95,7 @@ export default {
       currentCenter: latLng(MapConfig.center.lat, MapConfig.center.lon),
       mapOptions: MapConfig.mapOptions,
 
+      // route
       showAlternatives: true,
       altLineOptions: {
         styles: [{color: 'black', opacity: 0.3, weight: 8}]
@@ -92,11 +105,16 @@ export default {
       searchQuery: '',
       showSearch: false,
 
+      // occasions
       newOccasion: null,
-      waypoints: []
+      waypoints: [],
+
+      // common
+      mode: Mode.MODE_DEFAULT
     };
   },
   methods: {
+    // map
     async setCenter() {
       this.locator = new Locator();
       this.center = await this.locator.getPosition();
@@ -111,12 +129,39 @@ export default {
       this.$refs.roadMap.setZoom(this.zoom);
       this.$refs.roadMap.setCenter(this.center);
     },
-    addMarker(e) {
+
+    // controls
+    addWaypoints(w) {
       if (this.waypoints.length > 1) {
         this.waypoints = this.waypoints.slice(1,);
       }
-      this.waypoints.push(e.latlng);
+      this.waypoints.push(w.latlng);
     },
+    addOccasion(o) {
+      this.newOccasion = o.latlng;
+    },
+    addMarker(e) {
+      switch (this.mode) {
+        case Mode.MODE_WAYPOINTS:
+          this.addWaypoints(e);
+          break;
+        case Mode.MODE_OCCASIONS:
+          this.addOccasion(e);
+          break;
+        default:
+          console.log("default mode");
+      }
+    },
+
+    // modes
+    changeMode(newMode) {
+      if (newMode === this.mode) {
+        this.mode = Mode.MODE_DEFAULT;
+      } else {
+        this.mode = newMode;
+      }
+      Toast.success(this.mode.toUpperCase());
+    }
   },
   components: {
     LRoutingMachine,
@@ -126,9 +171,10 @@ export default {
     LPopup,
     LIcon,
     LControl,
-    SearchDestination
+    SearchDestination,
   }
 }
+;
 </script>
 
 <style scoped>
@@ -153,12 +199,14 @@ export default {
   width: 35px;
   height: 33px;
 }
+</style>
 
-.create-waypoints-control {
-  color: darkblue;
+<style>
+.leaflet-routing-container-hide {
+  width: 35px !important;
+  height: 33px !important;
 }
-
-.create-occasion-control {
-  color: darkred;
+.leaflet-routing-collapse-btn {
+  left: 3px !important;
 }
 </style>

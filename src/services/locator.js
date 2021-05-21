@@ -1,5 +1,4 @@
 import {latLng} from "leaflet";
-import {err} from "@/services/common/errors";
 
 export class Locator {
     constructor(enableHighAccuracy=true, timeout=5000, maximumAge=0) {

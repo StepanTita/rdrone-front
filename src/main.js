@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import Vant from 'vant';
 import 'vant/lib/index.css';
 import L from 'leaflet';
+import VueMeta from 'vue-meta'
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -16,6 +17,7 @@ L.Icon.Default.mergeOptions({
 });
 
 Vue.use(Vant);
+Vue.use(VueMeta)
 
 import {Locale} from 'vant';
 import enUS from 'vant/es/locale/lang/en-US';

@@ -85,7 +85,6 @@ export default {
       this.overlay = !this.overlay;
     },
     createReply(commentId) {
-      console.log(commentId.id);
       this.replyTo = commentId;
       this.toggleCreateComment();
     },

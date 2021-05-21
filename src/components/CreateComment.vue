@@ -4,7 +4,7 @@
       <div class="wrapper" v-on:click="toggleOverlay">
         <div class="block" v-on:click.stop>
           <h3>Create new comment:</h3>
-          <van-divider />
+          <van-divider/>
           <van-form validate-first @failed="onFailed" @submit="onSubmit">
             <van-field
                 v-if="replyTo !== null"
@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       commentText: ''
-    }
+    };
   },
   mounted() {
     this.commentQuerier = new CommentsQuerier();
@@ -71,12 +71,10 @@ export default {
     },
     async onSubmit(values) {
       Toast.success('Success');
-      console.log('submit', values);
 
       this.commentQuerier.createComment(values).then((resp) => {
         // todo: make decorator
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
-        console.log(resp);
         if (resp.StatusOK()) {
           this.toggleOverlay();
           EventBus.$emit(UPDATE_COMMENTS_EVENT);
@@ -84,11 +82,10 @@ export default {
       });
     },
     onFailed() {
-      console.log("You FAILED");
       Toast.fail('Fail');
     }
   }
-}
+};
 </script>
 
 <style scoped>
