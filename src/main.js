@@ -13,7 +13,7 @@ Vue.use(Vant);
 Vue.use(VueGoogleMaps, {
     load: {
         key: config.google_api_key,
-        libraries: 'places',
+        libraries: 'places,directions',
     },
 });
 

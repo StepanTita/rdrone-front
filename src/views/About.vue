@@ -2,7 +2,6 @@
   <div class="about">
     <!-- Error -->
     <van-empty image="error" description="Description" />
-    <search-autocomplete/>
     <!-- Network -->
 <!--    <van-empty image="network" description="Description" />-->
     <!-- Search -->
@@ -12,9 +11,7 @@
 </template>
 
 <script>
-import SearchAutocomplete from "@/components/SearchAutocomplete";
 export default {
-  components: {SearchAutocomplete}
 };
 </script>
 
