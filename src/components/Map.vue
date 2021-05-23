@@ -18,9 +18,15 @@
         </div>
       </div>
     </div>
+    <div class="map-controls-container d-flex flex-row-reverse" v-if="showRoutesControl">
+      <van-button plain>
+        <van-icon name="location-o" @click="openDetailedRoute"/>
+      </van-button>
+    </div>
     <GmapMap
         :center="center"
         :zoom="zoom"
+        :options="mapOptions"
         ref="map"
         @click="addMarker"
         map-type-id="roadmap"
@@ -34,25 +40,7 @@
           :draggable="false"
           @click="openOccasionInfo(m)"
       />
-      <gmap-info-window
-          v-if="infoWindow"
-          :opened="infoWindowOpen"
-          :options="infoOptions"
-          :position="infoWindow.Position()"
-          @closeclick="infoWindowOpen=false"
-      >
-        <div class="card" v-if="infoWindow.Data()">
-          <img class="card-img-top" v-bind:src="infoWindow.Data().image" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">{{ infoWindow.Data().title }}</h5>
-            <p class="card-text">{{ infoWindow.Data().description }}</p>
-            <p class="card-text"><small class="text-muted">Last updated
-              {{ new Date(infoWindow.Data().updatedAt).toLocaleString() }}</small></p>
-            <router-link to="/about" class="btn btn-light">Details</router-link>
-            <router-link v-bind:to="`/comments/${infoWindow.Data().id}`" class="btn btn-light">Comments</router-link>
-          </div>
-        </div>
-      </gmap-info-window>
+      <info-window v-bind:info-window="infoWindow" v-bind:options="infoWindowOptions"/>
 
       <GmapMarker
           v-if="newOccasion"
@@ -60,7 +48,7 @@
           :position="newOccasion.Position()"
           :clickable="true"
           :draggable="true"
-          :icon="{ url: require('../assets/images/pin.png')}"
+          :icon="{ url: require('@/assets/images/pin.png')}"
       />
 
       <GmapMarker
@@ -70,18 +58,18 @@
           :clickable="true"
           :draggable="true"
           :label="m.Style()"
-          @click="attachInstructionText"
+          @click="routing.attachInstructionText"
       />
 
     </GmapMap>
-        <van-action-sheet v-model="showDirections"
-                          close-on-click-action
-                          cancel-text="Cancel"
-                          title="Route">
-          <div ref="instructionsPanel">
-            <p>Total Distance: <span id="total">{{ totalDistance }}</span></p>
-          </div>
-        </van-action-sheet>
+    <van-action-sheet v-model="showDirections"
+                      close-on-click-action
+                      cancel-text="Cancel"
+                      title="Route">
+      <div ref="instructionsPanel">
+        <p>Total Distance: <span id="total">{{ totalDistance }}</span></p>
+      </div>
+    </van-action-sheet>
   </div>
 </template>
 
@@ -91,50 +79,47 @@ import {latLng} from "leaflet";
 import * as Mode from "@/services/common/mode";
 import {Toast} from "vant";
 import {Marker} from "@/services/map/marker";
-import {WaypointIterator} from "@/services/common/iterator";
+import InfoWindow from "@/components/InfoWindow";
+import {Routing} from "@/services/routing/routing";
+import {Waypointing} from "@/services/waypointing/waypointing";
+import {DIRECTIONS_CHANGED_EVENT} from "@/services/common/events";
 
 export default {
   name: 'Map',
+  components: {InfoWindow},
   props: {
     occasions: Array
   },
   updated() {
     if (this.showDirections) {
-      this.dR.setPanel(this.$refs.instructionsPanel);
+      this.routing.dR.setPanel(this.$refs.instructionsPanel);
     }
   },
+  created() {
+    this.waypointing = new Waypointing();
+  },
   async mounted() {
-    this.waypointIterator = new WaypointIterator("AB");
     const gmapApi = await this.$gmapApiPromiseLazy();
 
-    this.dS = new gmapApi.maps.DirectionsService;
-    this.dR = new gmapApi.maps.DirectionsRenderer({
+    let dS = new gmapApi.maps.DirectionsService;
+    let dR = new gmapApi.maps.DirectionsRenderer({
       draggable: true,
       map: this.$refs.map.$mapObject,
     });
 
-    this.dR.addListener("directions_changed", () => {
-      this.computeTotalDistance(this.dR.getDirections());
+    dR.addListener(DIRECTIONS_CHANGED_EVENT, () => {
+      this.totalDistance = this.routing.computeTotalDistance(dR.getDirections());
     });
 
-    this.idCounter = 0;
-
-    this.routeMarkers = [];
+    this.routing = new Routing(this.$refs.map.$mapObject, dS, dR);
+    this.waypointing.setRouting(this.routing);
   },
   data() {
     return {
       // map
       zoom: MapConfig.zoom,
       center: latLng(MapConfig.center.lat, MapConfig.center.lon),
-      mapOptions: {
-        fullscreenControl: false,
-        zoomControl: true,
-        mapTypeControl: false,
-        scaleControl: false,
-        streetViewControl: false,
-        rotateControl: false,
-        disableDefaultUi: false,
-      },
+      mapOptions: MapConfig.mapOptions,
 
       // locating
       currentPlace: null,
@@ -144,22 +129,25 @@ export default {
 
       // occasions
       newOccasion: null,
-      waypoints: [],
 
       // info window
       infoWindow: null,
-      infoWindowOpen: false,
-      infoOptions: {
-        pixelOffset: {
-          width: 0,
-          height: -35
-        }
+      infoWindowOptions: {
+        open: false,
+        infoOptions: {
+          pixelOffset: {
+            width: 0,
+            height: -35
+          }
+        },
       },
 
       // directions
       showDirections: false,
-      totalDistance: "0 km",
-      routeSteps: null,
+      showRoutesControl: false,
+      totalDistance: '0 km',
+
+      waypoints: [],
 
       // common
       mode: Mode.MODE_WAYPOINTS
@@ -176,20 +164,10 @@ export default {
 
     // controls
     addWaypoints(w) {
-      const style = {
-        color: "#FFF",
-        text: this.waypointIterator.next(),
-      };
-
-      if (this.waypoints.length > 1) {
-        this.waypoints = this.waypoints.slice(1,);
+      if (this.waypoints.length > 0) {
+        this.showRoutesControl = true;
       }
-
-      this.waypoints.push(new Marker(this.next(), w.latLng, null, style));
-
-      if (this.waypoints.length > 1) {
-        this.calculateAndDisplayRoute(this.waypoints[0].Position(), this.waypoints[1].Position());
-      }
+      this.waypoints = this.waypointing.add(w);
     },
     addOccasion(o) {
       this.newOccasion = new Marker(this.next(), o.latLng);
@@ -203,13 +181,18 @@ export default {
           this.addOccasion(e);
           break;
         default:
-          console.log(e, "default mode");
+          console.log(e, 'default mode');
       }
     },
     openOccasionInfo(o) {
       this.center = o.Position();
       this.infoWindow = o;
-      this.infoWindowOpen = true;
+      this.infoWindowOptions.open = true;
+    },
+
+    // directions
+    openDetailedRoute() {
+      this.showDirections = true;
     },
 
     // modes
@@ -223,81 +206,10 @@ export default {
     },
 
     // common
+    // todo: fixme
     clearSearch() {
-      console.log(this.searchLocation);
       this.searchLocation = null;
     },
-    next() {
-      return this.idCounter++;
-    },
-
-    // directions
-    clearRoute() {
-      for (let m of this.routeMarkers) {
-        m.setMap(null);
-      }
-    },
-    calculateAndDisplayRoute(start, destination) {
-      this.clearRoute();
-
-      this.dS.route({
-        origin: start,
-        destination: destination,
-        travelMode: 'DRIVING',
-        avoidTolls: true,
-        provideRouteAlternatives: true,
-        optimizeWaypoints: true,
-        drivingOptions: {
-          departureTime: new Date(),
-          trafficModel: 'pessimistic'
-        },
-      }, (response, status) => {
-        if (status === 'OK') {
-          this.dR.setDirections(response);
-          this.showDirections = true;
-          this.showSteps(response);
-        } else {
-          window.alert('Directions request failed due to ' + status);
-        }
-      });
-      this.waypoints.length = 0;
-    },
-    showSteps(directionResult) {
-      let myRoute = directionResult.routes[0].legs[0];
-
-      for (let i = 0; i < myRoute.steps.length; i++) {
-        let marker = new google.maps.Marker({
-          position: myRoute.steps[i].start_point,
-          map: this.$refs.map.$mapObject,
-          optimized: true,
-          icon: require('../assets/images/route-pin.png')
-        });
-        marker.addListener("click", () => {
-          this.attachInstructionText(marker, myRoute.steps[i].instructions);
-        });
-        this.routeMarkers.push(marker);
-      }
-    },
-    attachInstructionText(m, text) {
-      this.center = m.position;
-      let stepDisplay = new google.maps.InfoWindow();
-      stepDisplay.setContent(text);
-      stepDisplay.open(this.$refs.map.$mapObject, m);
-    },
-    computeTotalDistance(result) {
-      let total = 0;
-      const myroute = result.routes[0];
-
-      if (!myroute) {
-        return;
-      }
-
-      for (let i = 0; i < myroute.legs.length; i++) {
-        total += myroute.legs[i].distance.value;
-      }
-      total = total / 1000;
-      this.totalDistance = total + " km";
-    }
   },
 };
 </script>
@@ -334,4 +246,25 @@ export default {
 
   line-height: 5px;
 }
+
+.map-controls-container {
+  width: 100%;
+
+  position: fixed;
+  margin: 15% 0 10px;
+
+  z-index: 2000;
+}
+
+.map-controls-container button {
+  width: 40px;
+  height: 40px;
+
+  margin-right: 10px;
+
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.5);
+
+  font-size: 20px;
+}
+
 </style>

@@ -9,5 +9,6 @@ export class AlertService {
         } else if (resp.StatusCritical()) {
             return [DANGER, `${DANGER_TEXT}, Error: ${DANGER_TEXT}`];
         }
+        return [DANGER, `${DANGER_TEXT}, Error: ${DANGER_TEXT}`];
     }
 }

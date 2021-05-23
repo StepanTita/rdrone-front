@@ -6,7 +6,7 @@ export class Response {
     }
 
     StatusOK() {
-        return (this.status >= 200 && this.status < 300) || (this.status === 0);
+        return (this.status >= 200 && this.status < 300) || (this.status === 0) || (this.status === 'OK');
     }
 
     StatusCritical() {

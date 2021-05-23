@@ -1,11 +1,18 @@
 {
-  "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "routePinImgUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABXklEQVRIS2NkoDFgpLH5DCPEgscyTtKMLMyiyMH5/8/f17JP9j0lFMREBdFTBbdHDAwMsmiGvZN6sEuEkYHhPz5LiLLgkaynMhsH85Z/v39r/IeYd5L5P0OkxMNd96niA5Ahz5W9exgZGIv//v0F4lZKP9jVQchwkDxRPoBbwMhQ/PfPb9pZwMTAWPyHlj5gYmQs/vOHBkH0TNFLnoWFece/v381/v77AwrYo4ysvwKkbh14QygeCMbBcyX3RBZmjil///3lgkYwzMy3DIz/K6Tv755DdjL9z8DA+ErZ9+yfvz+5QIb85+MW+s/AwMT06SvM5T+kHlgaMTI0/sNlCUEfIGs8c+ZM+efPn3kdHR1rCAUNTJ4kC06fPl3GwMDAZWpq2jA0LThz5kwWyAcmJiY9NPHBmTNnHP///89hamq6nSYWXLlyhe3169dMjo6OP2hiAbGGIqsjKRWNTAsA0BuEGWOvsvcAAAAASUVORK5CYII=",
   "center": {
     "lat": 49.99,
     "lon": 36.23
   },
   "zoom": 13,
   "mapOptions": {
-    "zoomSnap": 0.5
+    "zoomSnap": 0.5,
+    "fullscreenControl": false,
+    "zoomControl": true,
+    "mapTypeControl": false,
+    "scaleControl": false,
+    "streetViewControl": false,
+    "rotateControl": false,
+    "disableDefaultUi": true
   }
 }
