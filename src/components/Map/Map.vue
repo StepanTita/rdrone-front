@@ -18,11 +18,6 @@
         </div>
       </div>
     </div>
-    <div class="map-controls-container d-flex flex-row-reverse" v-if="showRoutesControl">
-      <van-button plain>
-        <van-icon name="location-o" @click="openDetailedRoute"/>
-      </van-button>
-    </div>
     <GmapMap
         :center="center"
         :zoom="zoom"
@@ -48,7 +43,7 @@
           :position="newOccasion.Position()"
           :clickable="true"
           :draggable="true"
-          :icon="{ url: require('@/assets/images/pin.png')}"
+          :icon="{ url: occasionImgUrl }"
       />
 
       <GmapMarker
@@ -82,11 +77,15 @@ import {Marker} from "@/services/map/marker";
 import InfoWindow from "@/components/InfoWindow";
 import {Routing} from "@/services/routing/routing";
 import {Waypointing} from "@/services/waypointing/waypointing";
-import {DIRECTIONS_CHANGED_EVENT} from "@/services/common/events";
+import * as Events from "@/services/common/events";
+import ControlDetailedRoute from "@/components/Map/ControlDetailedRoute";
+import Vue from "vue";
+import arrive from "arrive";
+import ControlMode from "@/components/Map/ControlMode";
 
 export default {
   name: 'Map',
-  components: {InfoWindow},
+  components: {ControlDetailedRoute, InfoWindow},
   props: {
     occasions: Array
   },
@@ -107,12 +106,24 @@ export default {
       map: this.$refs.map.$mapObject,
     });
 
-    dR.addListener(DIRECTIONS_CHANGED_EVENT, () => {
+    dR.addListener(Events.DIRECTIONS_CHANGED_EVENT, () => {
       this.totalDistance = this.routing.computeTotalDistance(dR.getDirections());
     });
 
     this.routing = new Routing(this.$refs.map.$mapObject, dS, dR);
     this.waypointing.setRouting(this.routing);
+
+    this.components = {
+      controlDetailedRoute: null,
+      controlMode: null,
+    };
+
+    this.createMapControls();
+  },
+  watch: {
+    showRoutesControl(newValue) {
+      this.components.controlDetailedRoute.showRoutesControl = newValue;
+    }
   },
   data() {
     return {
@@ -129,6 +140,7 @@ export default {
 
       // occasions
       newOccasion: null,
+      occasionImgUrl: MapConfig.occasionPinImgUrl,
 
       // info window
       infoWindow: null,
@@ -146,11 +158,10 @@ export default {
       showDirections: false,
       showRoutesControl: false,
       totalDistance: '0 km',
-
       waypoints: [],
 
       // common
-      mode: Mode.MODE_WAYPOINTS
+      mode: Mode.MODE_DEFAULT,
     };
   },
   methods: {
@@ -170,7 +181,7 @@ export default {
       this.waypoints = this.waypointing.add(w);
     },
     addOccasion(o) {
-      this.newOccasion = new Marker(this.next(), o.latLng);
+      this.newOccasion = new Marker('occasion', o.latLng);
     },
     addMarker(e) {
       switch (this.mode) {
@@ -190,26 +201,60 @@ export default {
       this.infoWindowOptions.open = true;
     },
 
-    // directions
-    openDetailedRoute() {
-      this.showDirections = true;
-    },
-
-    // modes
-    changeMode(newMode) {
-      if (newMode === this.mode) {
-        this.mode = Mode.MODE_DEFAULT;
-      } else {
-        this.mode = newMode;
-      }
-      Toast.success(this.mode.toUpperCase());
-    },
-
     // common
     // todo: fixme
     clearSearch() {
       this.searchLocation = null;
     },
+
+    createMapControls() {
+      // detailed route
+      const controlDiv = document.createElement('div');
+      controlDiv.setAttribute('id', 'control');
+
+      const detailedControlInner = document.createElement('div');
+      detailedControlInner.setAttribute('id', 'control-detailed-route-inner');
+      controlDiv.appendChild(detailedControlInner);
+      this.$refs.map.$mapObject.controls[google.maps.ControlPosition.LEFT_TOP].push(controlDiv);
+
+      const ComponentDetailedRouteCreator = Vue.extend(ControlDetailedRoute);
+
+      this.components.controlDetailedRoute = new ComponentDetailedRouteCreator({
+        propsData: {
+          showRoutesControl: this.showRoutesControl,
+          showDirections: this.showDirections,
+        }
+      });
+
+      this.components.controlDetailedRoute.$on(Events.SHOW_DIRECTIONS_EVENT, value => {
+        this.showDirections = value;
+      });
+
+      document.arrive('#control-detailed-route-inner', {onceOnly: true}, () => {
+        this.components.controlDetailedRoute.$mount('#control-detailed-route-inner');
+      });
+
+      const modeControlInner = document.createElement('div');
+      modeControlInner.setAttribute('id', 'control-mode-inner');
+      controlDiv.appendChild(modeControlInner);
+      this.$refs.map.$mapObject.controls[google.maps.ControlPosition.LEFT_TOP].push(controlDiv);
+
+      const ComponentModeCreator = Vue.extend(ControlMode);
+
+      this.components.controlMode = new ComponentModeCreator({
+        propsData: {
+          modeName: this.mode,
+        }
+      });
+
+      this.components.controlMode.$on(Events.MODE_CHANGE_EVENT, value => {
+        this.mode = value;
+      });
+
+      document.arrive('#control-mode-inner', {onceOnly: true}, () => {
+        this.components.controlMode.$mount('#control-mode-inner');
+      });
+    }
   },
 };
 </script>
@@ -246,25 +291,21 @@ export default {
 
   line-height: 5px;
 }
+</style>
 
-.map-controls-container {
-  width: 100%;
-
-  position: fixed;
-  margin: 15% 0 10px;
-
-  z-index: 2000;
+<style>
+#control {
+  top: 0 !important;
 }
 
-.map-controls-container button {
-  width: 40px;
-  height: 40px;
+.map-control {
+  width: 40px !important;
+  height: 40px !important;
 
-  margin-right: 10px;
+  margin: 10px !important;
 
-  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.5) !important;
 
-  font-size: 20px;
+  font-size: 20px !important;
 }
-
 </style>

@@ -1,4 +1,4 @@
-export class WaypointIterator {
+export class ItemsIterator {
     constructor(options) {
         this.curr = -1;
         this.options = options;

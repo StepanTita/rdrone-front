@@ -1,10 +1,10 @@
 import {Marker} from "@/services/map/marker";
-import {WaypointIterator} from "@/services/common/iterator";
+import {ItemsIterator} from "@/services/common/iterator";
 
 export class Waypointing {
     constructor() {
         this.waypoints = []
-        this.waypointIterator = new WaypointIterator("AB");
+        this.waypointIterator = new ItemsIterator("AB");
         this.idCounter = 0;
     }
 

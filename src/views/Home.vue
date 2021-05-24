@@ -6,7 +6,7 @@
 
 <script>
 // @ is an alias to /src
-import Map from "@/components/Map";
+import Map from "@/components/Map/Map";
 import {EventBus} from "@/services/common/eventBus";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {OccasionsQuerier} from "@/services/occasions/occasions";
