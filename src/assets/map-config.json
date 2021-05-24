@@ -13,6 +13,9 @@
     "scaleControl": false,
     "streetViewControl": false,
     "rotateControl": false,
-    "disableDefaultUi": true
+    "disableDefaultUi": true,
+    "mapTypeControlOptions": {
+      "style": "DROPDOWN_MENU"
+    }
   }
 }

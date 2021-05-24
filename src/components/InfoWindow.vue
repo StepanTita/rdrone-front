@@ -31,3 +31,14 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.btn {
+  margin-right: 10px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  border: none !important;
+}
+</style>

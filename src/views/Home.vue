@@ -12,6 +12,7 @@ import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {OccasionsQuerier} from "@/services/occasions/occasions";
 import {Locator} from "@/services/locator";
 import {Marker} from "@/services/map/marker";
+// todo use google method
 import {latLng} from "leaflet/dist/leaflet-src.esm";
 
 export default {
@@ -37,7 +38,6 @@ export default {
           this.occasions.push(new Marker(o.id, latLng({lat: o.lat, lng: o.lng}), o));
         }
         this.occasions.push(new Marker(1, latLng({lat: center.lat, lng: center.lng})));
-        console.log(this.occasions);
       });
     }
   },
