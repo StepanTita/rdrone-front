@@ -6,14 +6,11 @@
     </van-notify>
     <van-nav-bar
         title="RDrONE"
-        left-text="Back"
-        right-text="Next"
-        left-arrow
     />
     <router-view/>
     <van-tabbar v-model="active">
       <van-tabbar-item icon="home-o" @click="navigate('/')">Home</van-tabbar-item>
-      <van-tabbar-item icon="plus" @click="navigate('/occasion/add', newOccasion)">Add</van-tabbar-item>
+      <van-tabbar-item icon="plus" @click="navigateWithQuery('/occasion/add', newOccasion)">Add</van-tabbar-item>
       <van-tabbar-item icon="setting-o">Settings</van-tabbar-item>
     </van-tabbar>
   </div>
@@ -24,6 +21,8 @@ import config from "@/assets/config.json";
 import {AlertService} from "@/services/alerts/alerts";
 import * as Events from "@/services/common/events";
 import {EventBus} from "@/services/common/eventBus";
+import {Toast} from "vant";
+import {SHOW_ALERT_EVENT} from "@/services/common/events";
 
 export default {
   name: 'rdrone-app',
@@ -32,6 +31,7 @@ export default {
       alertType: '',
       alertText: '',
       active: 0,
+      currActive: 0,
       showAlert: false,
 
       newOccasion: null
@@ -57,14 +57,19 @@ export default {
       }, config.alert_timeout);
     },
 
-    navigate(path, marker) {
-      if (marker !== undefined) {
-        console.log({latLng: `${marker.latLng.lat()},${marker.latLng.lng()}`});
-        this.$router.push({path: path, query: {latLng: `${marker.latLng.lat()},${marker.latLng.lng()}`}});
-        return
-      }
+    navigate(path) {
       this.$router.push(path);
     },
+    navigateWithQuery(path, marker) {
+      if (marker) {
+        console.log({latLng: `${marker.latLng.lat()},${marker.latLng.lng()}`});
+        this.$router.push({path: path, query: {latLng: `${marker.latLng.lat()},${marker.latLng.lng()}`}});
+        this.currActive = this.active;
+        return
+      }
+      this.active = this.currActive;
+      Toast.fail('You must choose new occasion location first');
+    }
   },
 };
 </script>

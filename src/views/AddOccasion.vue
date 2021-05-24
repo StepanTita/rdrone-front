@@ -3,11 +3,18 @@
     <br>
     <h3 class="display-6">Add new occasion</h3>
     <van-divider/>
+    <van-overlay :show="showLoading">
+      <div class="wrapper">
+        <div class="block">
+          <van-loading color="#0094ff"/>
+        </div>
+      </div>
+    </van-overlay>
     <van-form @submit="onSubmit">
       <van-field
           readonly
           clickable
-          name="Address"
+          name="address"
           :value="chosenAddress"
           label="Address"
           placeholder="Select address"
@@ -24,14 +31,14 @@
 
       <van-field
           v-model="title"
-          name="Title"
+          name="title"
           label="Title"
           placeholder="Title"
           :rules="[{ required: true, message: 'Title is required' }]"
       />
       <van-field name="severity" label="Severity">
         <template #input>
-          <van-rate v-model="severity"/>
+          <van-rate v-model="severity" :count="10"/>
         </template>
       </van-field>
       <van-field
@@ -39,7 +46,7 @@
           type="textarea"
           rows="12"
           maxlength="250"
-          name="Description"
+          name="description"
           label="Description"
           placeholder="Description"
           :rules="[{ required: true, message: 'Description is required' }]"
@@ -62,8 +69,9 @@
 import {ReverseGeocoding} from "@/services/geocoding/reverseGeocoding";
 import {EventBus} from "@/services/common/eventBus";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
-import firebase from 'firebase/app'
-import 'firebase/storate';
+import {FirebaseImageUploader} from "@/services/firebase";
+import {OccasionsQuerier} from "@/services/occasions/occasions";
+import {Toast} from "vant";
 
 export default {
   name: 'AddOccasionContainer',
@@ -75,6 +83,8 @@ export default {
       addresses: [],
 
       showPicker: false,
+
+      showLoading: false,
 
       // form
       title: '',
@@ -91,16 +101,53 @@ export default {
       for (const [i, result] of resp.data.entries()) {
         this.addresses.push(result.formatted_address);
       }
-      // this.addresses = resp.data;
+      this.firebaseImageUploader = new FirebaseImageUploader();
     });
+
+    this.occasionsQuerier = new OccasionsQuerier();
   },
   methods: {
+    sanitize() {
+      this.chosenAddress = '';
+      this.title = '';
+      this.description = '';
+      this.severity = 0;
+      this.uploader = [];
+    },
     onConfirm(value) {
       this.chosenAddress = value;
       this.showPicker = false;
     },
-    onSubmit(values) {
+    async onSubmit(values) {
+      this.showLoading = true;
       console.log(values);
+      const [lat, lng] = this.$route.query.latLng.split(',');
+      const imgUrl = await this.uploadImage();
+      this.occasionsQuerier.createOccasion({
+        image: imgUrl,
+        title: values.title,
+        address: values.address,
+        lat: lat,
+        lng: lng,
+        description: values.description,
+        severity: values.severity
+      }).then((resp) => {
+        Toast.success("Success");
+        EventBus.$emit(SHOW_ALERT_EVENT, resp);
+        this.showLoading = false;
+        this.sanitize();
+      });
+    },
+    async uploadImage() {
+      if (this.uploader.length < 1) {
+        return '';
+      }
+      this.uploader[0].status = 'uploading';
+      this.uploader[0].message = 'Uploading...';
+      const imgUrl = await this.firebaseImageUploader.Upload(this.uploader[0].file);
+      this.uploader[0].status = '';
+      this.uploader[0].message = '';
+      return imgUrl;
     }
   }
 };
@@ -109,5 +156,12 @@ export default {
 <style scoped>
 .display-6 {
   color: #4e4e4e !important;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 </style>
