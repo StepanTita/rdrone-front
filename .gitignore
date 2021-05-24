@@ -3,6 +3,7 @@ node_modules
 /dist
 
 src/assets/config.json
+#public/index.html
 
 # local env files
 .env.local

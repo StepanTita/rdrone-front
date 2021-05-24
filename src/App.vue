@@ -13,16 +13,16 @@
     <router-view/>
     <van-tabbar v-model="active">
       <van-tabbar-item icon="home-o" @click="navigate('/')">Home</van-tabbar-item>
-      <van-tabbar-item icon="plus" @click="navigate('/about')">Add</van-tabbar-item>
+      <van-tabbar-item icon="plus" @click="navigate('/occasion/add', newOccasion)">Add</van-tabbar-item>
       <van-tabbar-item icon="setting-o">Settings</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>
 
 <script>
-import config from "@/assets/config.json"
+import config from "@/assets/config.json";
 import {AlertService} from "@/services/alerts/alerts";
-import {SHOW_ALERT_EVENT} from "@/services/common/events";
+import * as Events from "@/services/common/events";
 import {EventBus} from "@/services/common/eventBus";
 
 export default {
@@ -33,10 +33,15 @@ export default {
       alertText: '',
       active: 0,
       showAlert: false,
-    }
+
+      newOccasion: null
+    };
   },
   created() {
-    EventBus.$on(SHOW_ALERT_EVENT, this.setupAlert);
+    EventBus.$on(Events.SHOW_ALERT_EVENT, this.setupAlert);
+    EventBus.$on(Events.ADD_NEW_OCCASION_EVENT, o => {
+      this.newOccasion = o;
+    });
   },
   mounted() {
     this.alertService = new AlertService();
@@ -49,13 +54,19 @@ export default {
         this.alertType = '';
         this.alertText = '';
         this.showAlert = false;
-      }, config.alert_timeout)
+      }, config.alert_timeout);
     },
-    navigate(path) {
+
+    navigate(path, marker) {
+      if (marker !== undefined) {
+        console.log({latLng: `${marker.latLng.lat()},${marker.latLng.lng()}`});
+        this.$router.push({path: path, query: {latLng: `${marker.latLng.lat()},${marker.latLng.lng()}`}});
+        return
+      }
       this.$router.push(path);
     },
   },
-}
+};
 </script>
 
 <style>

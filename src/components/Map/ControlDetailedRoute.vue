@@ -1,6 +1,6 @@
 <template>
-  <van-button plain v-if="showRoutesControl" class="map-control">
-    <van-icon name="location-o" @click="openDirectionsPanel"/>
+  <van-button plain v-if="showRoutesControl" class="map-control" @click="openDirectionsPanel">
+    <van-icon name="location-o"/>
   </van-button>
 </template>
 
@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     openDirectionsPanel() {
-      this.showDirections = true
+      this.showDirections = true;
       this.$emit(SHOW_DIRECTIONS_EVENT, this.showDirections);
     }
   }

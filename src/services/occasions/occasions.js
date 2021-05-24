@@ -13,6 +13,11 @@ export class OccasionsQuerier {
         return new Response(resp.data.reverse().slice(0, 10), resp.status, resp.statusText);
     };
 
+    async getOccasion(id) {
+        let resp = await axios.get(config.api + endpoint + '/' + id).catch(err);
+        return new Response(resp.data, resp.status, resp.statusText);
+    }
+
     // todo type conversion
     sanitize(data) {
         return data;

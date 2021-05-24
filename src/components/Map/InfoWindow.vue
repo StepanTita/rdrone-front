@@ -14,7 +14,7 @@
           <p class="card-text">{{ infoWindow.Data().description }}</p>
           <p class="card-text"><small class="text-muted">Last updated
             {{ new Date(infoWindow.Data().updatedAt).toLocaleString() }}</small></p>
-          <router-link to="/about" class="btn btn-light">Details</router-link>
+          <router-link v-bind:to="`/occasion/details/${infoWindow.Data().id}`" class="btn btn-light">Details</router-link>
           <router-link v-bind:to="`/comments/${infoWindow.Data().id}`" class="btn btn-light">Comments</router-link>
         </div>
       </div>

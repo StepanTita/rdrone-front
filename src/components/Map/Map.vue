@@ -72,9 +72,8 @@
 import MapConfig from "@/assets/map-config.json";
 import {latLng} from "leaflet";
 import * as Mode from "@/services/common/mode";
-import {Toast} from "vant";
 import {Marker} from "@/services/map/marker";
-import InfoWindow from "@/components/InfoWindow";
+import InfoWindow from "@/components/Map/InfoWindow";
 import {Routing} from "@/services/routing/routing";
 import {Waypointing} from "@/services/waypointing/waypointing";
 import * as Events from "@/services/common/events";
@@ -82,6 +81,8 @@ import ControlDetailedRoute from "@/components/Map/ControlDetailedRoute";
 import Vue from "vue";
 import arrive from "arrive";
 import ControlMode from "@/components/Map/ControlMode";
+import {EventBus} from "@/services/common/eventBus";
+import {ADD_NEW_OCCASION_EVENT} from "@/services/common/events";
 
 export default {
   name: 'Map',
@@ -189,6 +190,7 @@ export default {
           this.addWaypoints(e);
           break;
         case Mode.MODE_OCCASIONS:
+          EventBus.$emit(Events.ADD_NEW_OCCASION_EVENT, e);
           this.addOccasion(e);
           break;
         default:
@@ -208,7 +210,7 @@ export default {
     },
 
     createMapControls() {
-      // detailed route
+      // control detailed route
       const controlDiv = document.createElement('div');
       controlDiv.setAttribute('id', 'control');
 
@@ -234,6 +236,7 @@ export default {
         this.components.controlDetailedRoute.$mount('#control-detailed-route-inner');
       });
 
+      // control modes
       const modeControlInner = document.createElement('div');
       modeControlInner.setAttribute('id', 'control-mode-inner');
       controlDiv.appendChild(modeControlInner);
@@ -254,6 +257,8 @@ export default {
       document.arrive('#control-mode-inner', {onceOnly: true}, () => {
         this.components.controlMode.$mount('#control-mode-inner');
       });
+
+      // todo: control to remove built route
     }
   },
 };
