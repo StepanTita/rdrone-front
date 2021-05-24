@@ -38,7 +38,7 @@
       />
       <van-field name="severity" label="Severity">
         <template #input>
-          <van-rate v-model="severity" :count="10"/>
+          <van-rate v-model="severity" :count="10" icon="fire" void-icon="fire-o" color="#ee0a24"/>
         </template>
       </van-field>
       <van-field

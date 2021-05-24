@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Comments from "@/views/Comments";
 import Occasion from "@/views/Occasion";
 import AddOccasion from "@/views/AddOccasion";
+import About from "@/views/About";
 
 Vue.use(VueRouter)
 
@@ -16,7 +17,7 @@ const routes = [
   {
     path: '/about',
     name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: About
   },
   {
     path: '/comments/:occasion_id',

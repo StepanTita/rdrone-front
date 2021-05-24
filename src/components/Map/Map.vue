@@ -56,6 +56,15 @@
           @click="routing.attachInstructionText"
       />
 
+      <GmapMarker
+          v-for="m in incidents"
+          :key="'incidents-' + m.Id()"
+          :position="m.Position()"
+          :clickable="true"
+          :draggable="false"
+          :icon="{ url: m.Data().iconURL }"
+      />
+
     </GmapMap>
     <van-action-sheet v-model="showDirections"
                       close-on-click-action
