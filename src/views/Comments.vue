@@ -6,7 +6,7 @@
 
 <script>
 // @ is an alias to /src
-import CommentsList from "@/components/CommentsList"
+import CommentsList from "@/components/Comments/CommentsList"
 import {CommentsQuerier} from "@/services/comments/comments";
 import {END_CREATE_COMMENT_EVENT, SHOW_ALERT_EVENT, UPDATE_COMMENTS_EVENT} from "@/services/common/events";
 import {EventBus} from "@/services/common/eventBus";

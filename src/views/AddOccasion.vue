@@ -72,7 +72,8 @@ import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {FirebaseImageUploader} from "@/services/firebase";
 import {OccasionsQuerier} from "@/services/occasions/occasions";
 import {Toast} from "vant";
-import config from "@/assets/config.json"
+import config from "@/assets/config.json";
+import {err} from "@/services/common/errors";
 
 export default {
   name: 'AddOccasionContainer',
@@ -97,7 +98,7 @@ export default {
   },
   mounted() {
     this.reverseGeocoding = new ReverseGeocoding();
-    this.reverseGeocoding.getAddress(this.$route.query.latLng).then((resp) => {
+    this.reverseGeocoding.getAddress(this.$route.query.latLng).catch(err).then((resp) => {
       EventBus.$emit(SHOW_ALERT_EVENT, resp);
       for (const [i, result] of resp.data.entries()) {
         this.addresses.push(result.formatted_address);
@@ -131,7 +132,7 @@ export default {
         lng: lng,
         description: values.description,
         severity: values.severity
-      }).then((resp) => {
+      }).catch(err).then((resp) => {
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
         this.showLoading = false;

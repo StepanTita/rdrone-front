@@ -3,10 +3,11 @@ import 'firebase/storage';
 import 'firebase/auth';
 import 'firebase/firestore';
 import firebaseConfig from "@/assets/firebase-config.json";
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {EventBus} from "@/services/common/eventBus";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {Response} from "@/services/common/response";
+import {err} from "@/services/common/errors";
 
 export class FirebaseImageUploader {
     constructor() {
@@ -24,8 +25,7 @@ export class FirebaseImageUploader {
             storageRef.on(`state_changed`, snapshot => {
                     console.log((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
                 }, error => {
-                    console.log(error.message);
-                    EventBus.$emit(SHOW_ALERT_EVENT, new Response(null, error, error.message));
+                    err(error);
                     reject(error);
                 },
                 () => {

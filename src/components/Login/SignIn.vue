@@ -7,7 +7,7 @@
       <div class="invalid-feedback" v-if="!$v.username.required">Field is required</div>
       <div class="invalid-feedback" v-if="!$v.username.username">Field should be email or alphanumeric</div>
 
-      <input type="password" id="password" class="fadeIn third" name="login" placeholder="Password"
+      <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password"
              v-model.trim="$v.password.$model" :class="$v.password.$error ? 'is-invalid': ''">
       <div class="invalid-feedback" v-if="!$v.password.required">Field is required</div>
 
@@ -16,8 +16,8 @@
 
     <!-- Remind Password -->
     <div id="formFooter">
-      <router-link class="underlineHover" to="#">Forgot Password?</router-link>
-      <br>
+      <!--      <router-link class="underlineHover" to="#">Forgot Password?</router-link>-->
+      <!--      <br>-->
       <router-link class="underlineHover" to="/sign-up">Sign up</router-link>
     </div>
   </div>
@@ -27,9 +27,17 @@
 import {EventBus} from "@/services/common/eventBus";
 import * as Events from "@/services/common/events";
 import {required, or, email, alphaNum} from 'vuelidate/lib/validators';
+import {USER_DATA_KEY} from "@/services/common/storate";
+import {Toast} from "vant";
+import {SHOW_ALERT_EVENT} from "@/services/common/events";
+import {err} from "@/services/common/errors";
+import {UsersQuerier} from "@/services/users";
 
 export default {
   Name: 'SignIn',
+  mounted() {
+    this.usersQuerier = new UsersQuerier();
+  },
   data() {
     return {
       username: '',
@@ -46,12 +54,32 @@ export default {
     }
   },
   methods: {
-    Success() {
-      EventBus.$emit(Events.USER_SIGNED_IN_EVENT);
+    Success(user) {
+      localStorage.setItem(USER_DATA_KEY, user);
+      this.$router.push('/');
     },
     onSubmit(values) {
       console.log(values);
       this.$v.$touch();
+
+      if (this.$v.$invalid) {
+        Toast.fail('Please, fill the form correctly...');
+        return;
+      }
+
+      this.usersQuerier.getUser({
+        login: values.login,
+        password: values.password
+      }).catch(err).then((resp) => {
+        console.log(resp);
+        Toast.success("Success");
+        EventBus.$emit(SHOW_ALERT_EVENT, resp);
+
+        this.sanitize();
+
+        this.showLoading = false;
+        this.Success(resp.data);
+      });
     }
   }
 };

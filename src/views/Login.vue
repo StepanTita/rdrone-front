@@ -19,8 +19,8 @@
 import {EventBus} from "@/services/common/eventBus";
 import * as Events from "@/services/common/events";
 import {required, or, email, alphaNum} from 'vuelidate/lib/validators';
-import SignIn from "@/components/login/SignIn";
-import SignUp from "@/components/login/SignUp";
+import SignIn from "@/components/Login/SignIn";
+import SignUp from "@/components/Login/SignUp";
 
 export default {
   Name: 'Login',

@@ -1,6 +1,6 @@
 export const SHOW_ALERT_EVENT = 'show-alert';
 export const END_CREATE_COMMENT_EVENT = 'end-create-comment';
-export const UPDATE_COMMENTS_EVENT = 'update-comments';
+export const UPDATE_COMMENTS_EVENT = 'update-Comments';
 export const ADD_NEW_OCCASION_EVENT = 'new-occasion';
 export const USER_SIGNED_IN_EVENT = 'user-signed-in'
 

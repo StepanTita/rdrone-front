@@ -102,6 +102,7 @@ import config from "@/assets/config.json";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {UsersQuerier} from "@/services/users";
 import {USER_DATA_KEY} from "@/services/common/storate";
+import {err} from "@/services/common/errors";
 
 export default {
   Name: 'SignUp',
@@ -154,14 +155,15 @@ export default {
   methods: {
     Success(user) {
       localStorage.setItem(USER_DATA_KEY, user);
+      this.$router.push('/');
     },
     async onSubmit(values) {
-      console.log(values);
       this.$v.$touch();
       if (this.$v.$invalid) {
         Toast.fail('Please, fill the form correctly...');
         return;
       }
+      // todo: use decorators for loading
       this.showLoading = true;
 
       const imgUrl = await this.uploadImage(values.username);
@@ -173,7 +175,7 @@ export default {
         username: values.username,
         email: values.email,
         password: values.password,
-      }).then((resp) => {
+      }).catch(err).then((resp) => {
         console.log(resp);
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
@@ -181,9 +183,7 @@ export default {
         this.sanitize();
 
         this.showLoading = false;
-        this.Success();
-
-        this.$router.push('/');
+        this.Success(resp.data);
       });
 
     },

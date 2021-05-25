@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import CreateComment from "@/components/CreateComment";
+import CreateComment from "@/components/Comments/CreateComment";
 import {EventBus} from "@/services/common/eventBus";
 import {END_CREATE_COMMENT_EVENT, UPDATE_COMMENTS_EVENT} from "@/services/common/events";
 

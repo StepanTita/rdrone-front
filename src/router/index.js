@@ -4,7 +4,7 @@ import Home from '../views/Home.vue';
 import Comments from "@/views/Comments";
 import Occasion from "@/views/Occasion";
 import AddOccasion from "@/views/AddOccasion";
-import About from "@/views/About";
+import About from "@/views/Settings";
 import {USER_DATA_KEY} from "@/services/common/storate";
 import {EventBus} from "@/services/common/eventBus";
 import * as Events from "@/services/common/events";
@@ -36,7 +36,7 @@ const routes = [
         component: About
     },
     {
-        path: '/comments/:occasion_id',
+        path: '/Comments/:occasion_id',
         name: 'Comments',
         component: Comments
     },
