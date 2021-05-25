@@ -80,14 +80,15 @@ export default {
         password: values.password
       }).then((resp) => {
         if (!resp.StatusOK()) {
-          this.showLoading = false;
           throw new Error(resp.Status());
         }
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
-        this.showLoading = false;
         this.Success(resp.data);
-      }).catch(err);
+      }).catch(err).finally(() => {
+        console.log("Hello");
+        this.showLoading = false;
+      });
     }
   }
 };

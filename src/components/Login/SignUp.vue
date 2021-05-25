@@ -167,7 +167,6 @@ export default {
       this.showLoading = true;
 
       const imgUrl = await this.uploadImage(values.username);
-
       this.usersQuerier.createUser({
         avatar: imgUrl,
         firstName: values.firstName,
@@ -177,18 +176,16 @@ export default {
         password: values.password,
       }).then((resp) => {
         if (!resp.StatusOK()) {
-          this.showLoading = false;
           throw new Error(resp.Status());
         }
-        console.log(resp);
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
 
-        this.sanitize();
-
-        this.showLoading = false;
         this.Success(resp.data);
-      }).catch(err);
+      }).catch(err).finally(() => {
+        this.showLoading = false;
+        this.sanitize();
+      });
 
     },
     onOversize(file) {

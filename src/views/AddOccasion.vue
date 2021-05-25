@@ -134,14 +134,14 @@ export default {
         severity: values.severity
       }).then((resp) => {
         if (!resp.StatusOK()) {
-          this.showLoading = false;
           throw new Error(resp.Status());
         }
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
+      }).catch(err).finally(() => {
         this.showLoading = false;
         this.sanitize();
-      }).catch(err);
+      });
     },
     async uploadImage() {
       if (this.uploader.length < 1) {

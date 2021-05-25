@@ -8,36 +8,24 @@ import {EventBus} from "@/services/common/eventBus";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {Response} from "@/services/common/response";
 import {err} from "@/services/common/errors";
+import config from "@/assets/config.json";
 
 export class FirebaseImageUploader {
     constructor() {
         if (firebase.apps.length === 0) {
             firebase.initializeApp(firebaseConfig);
+            firebase.storage().setMaxUploadRetryTime(config.firebase_max_upload_retry_time);
         }
     }
 
-    async Upload(path, img) {
-        let picture;
-        await new Promise((resolve, reject) => {
-            console.log(uuidv4() + img.name);
+    Upload(path, img) {
+        return new Promise((resolve, reject) => {
             const storageRef = firebase.storage().ref(`${path}/${uuidv4() + img.name}`).put(img);
-
-            storageRef.on(`state_changed`, snapshot => {
-                    console.log((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                }, error => {
-                    err(error);
-                    reject(error);
-                },
-                () => {
-                    console.log('Upload complete');
-                    storageRef.snapshot.ref.getDownloadURL().then((url) => {
-                        picture = url;
-                        resolve();
-                    });
-                }
-            );
+            storageRef.then((snapshot => {
+                snapshot.ref.getDownloadURL().then((url) => {
+                    resolve(url);
+                });
+            }), error => reject(err(error)));
         });
-
-        return picture;
     }
 }
