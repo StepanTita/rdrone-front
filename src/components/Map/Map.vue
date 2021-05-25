@@ -33,10 +33,9 @@
           :position="m.Position()"
           :clickable="true"
           :draggable="false"
-          @click="openOccasionInfo(m)"
+          @click="openInfo(m)"
       />
       <info-window v-bind:info-window="infoWindowOccasions" v-bind:options="infoWindowOptions"/>
-      <info-window v-bind:info-window="infoWindowIncidents" v-bind:options="infoWindowOptions"/>
 
       <GmapMarker
           v-if="newOccasion"
@@ -63,7 +62,8 @@
           :position="m.Position()"
           :clickable="true"
           :draggable="false"
-          :icon="{ url: m.Data().iconURL }"
+          :icon="{ url: m.Data().Icon() }"
+          @click="openInfo(m)"
       />
 
     </GmapMap>
@@ -155,7 +155,6 @@ export default {
 
       // info window
       infoWindowOccasions: null,
-      infoWindowIncidents: null,
       infoWindowOptions: {
         open: false,
         infoOptions: {
@@ -208,7 +207,8 @@ export default {
           console.log(e, 'default mode');
       }
     },
-    openOccasionInfo(o) {
+
+    openInfo(o) {
       this.center = o.Position();
       this.infoWindowOccasions = o;
       this.infoWindowOptions.open = true;

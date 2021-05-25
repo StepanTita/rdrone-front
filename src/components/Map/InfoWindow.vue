@@ -8,14 +8,16 @@
         @closeclick="options.open=false"
     >
       <div class="card" v-if="infoWindow.Data()">
-        <img class="card-img-top" v-bind:src="infoWindow.Data().image" alt="Card image cap">
+        <img class="card-img-top" v-if="infoWindow.Data().Image()" v-bind:src="infoWindow.Data().Image()" alt="Card image cap">
         <div class="card-body">
-          <h5 class="card-title">{{ infoWindow.Data().title }}</h5>
-          <p class="card-text">{{ infoWindow.Data().description }}</p>
-          <p class="card-text"><small class="text-muted">Last updated
-            {{ new Date(infoWindow.Data().updatedAt).toLocaleString() }}</small></p>
-          <router-link v-bind:to="`/occasion/details/${infoWindow.Data().id}`" class="btn btn-light">Details</router-link>
-          <router-link v-bind:to="`/comments/${infoWindow.Data().id}`" class="btn btn-light">Comments</router-link>
+          <h5 class="card-title">{{ infoWindow.Data().Title() }}</h5>
+          <p class="card-text">{{ infoWindow.Data().Desc() }}</p>
+          <p class="card-text"><small class="text-muted">
+            {{ infoWindow.Data().Date() }}</small></p>
+          <div v-if="infoWindow.Data().Related()">
+            <router-link v-bind:to="`/occasion/details/${infoWindow.Id()}`" class="btn btn-light">Details</router-link>
+            <router-link v-bind:to="`/comments/${infoWindow.Id()}`" class="btn btn-light">Comments</router-link>
+          </div>
         </div>
       </div>
     </gmap-info-window>
