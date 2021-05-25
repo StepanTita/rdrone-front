@@ -1,5 +1,5 @@
 const [SUCCESS, SUCCESS_TEXT] = ["success", "Load successful"];
-const [DANGER, DANGER_TEXT] = ["danger", "Something Bad Happened"];
+const [DANGER, DANGER_TEXT] = ["danger", "Failure"];
 
 export class AlertService {
     constructor() {}
@@ -7,8 +7,8 @@ export class AlertService {
         if (resp.StatusOK()) {
             return [SUCCESS, SUCCESS_TEXT];
         } else if (resp.StatusCritical()) {
-            return [DANGER, `${DANGER_TEXT}, Error: ${DANGER_TEXT}`];
+            return [DANGER, `${DANGER_TEXT}, Error: ${resp.Status()}`];
         }
-        return [DANGER, `${DANGER_TEXT}, Error: ${DANGER_TEXT}`];
+        return [DANGER, `${DANGER_TEXT}, Error: ${resp.Status()}`];
     }
 }

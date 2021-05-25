@@ -175,7 +175,11 @@ export default {
         username: values.username,
         email: values.email,
         password: values.password,
-      }).catch(err).then((resp) => {
+      }).then((resp) => {
+        if (!resp.StatusOK()) {
+          this.showLoading = false;
+          throw new Error(resp.Status());
+        }
         console.log(resp);
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
@@ -184,7 +188,7 @@ export default {
 
         this.showLoading = false;
         this.Success(resp.data);
-      });
+      }).catch(err);
 
     },
     onOversize(file) {

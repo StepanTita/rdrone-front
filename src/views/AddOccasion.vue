@@ -132,12 +132,16 @@ export default {
         lng: lng,
         description: values.description,
         severity: values.severity
-      }).catch(err).then((resp) => {
+      }).then((resp) => {
+        if (!resp.StatusOK()) {
+          this.showLoading = false;
+          throw new Error(resp.Status());
+        }
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
         this.showLoading = false;
         this.sanitize();
-      });
+      }).catch(err);
     },
     async uploadImage() {
       if (this.uploader.length < 1) {

@@ -1,5 +1,12 @@
 <template>
   <div>
+    <van-overlay :show="showLoading">
+      <div class="wrapper">
+        <div class="block">
+          <van-loading color="#0094ff"/>
+        </div>
+      </div>
+    </van-overlay>
     <!-- Login Form -->
     <form @submit.prevent="onSubmit" novalidate>
       <input type="text" id="login" class="fadeIn second" name="login" placeholder="Username or email"
@@ -42,6 +49,7 @@ export default {
     return {
       username: '',
       password: '',
+      showLoading: false,
     };
   },
   validations: {
@@ -59,27 +67,27 @@ export default {
       this.$router.push('/');
     },
     onSubmit(values) {
-      console.log(values);
       this.$v.$touch();
 
       if (this.$v.$invalid) {
         Toast.fail('Please, fill the form correctly...');
         return;
       }
+      this.showLoading = true;
 
       this.usersQuerier.getUser({
         login: values.login,
         password: values.password
-      }).catch(err).then((resp) => {
-        console.log(resp);
+      }).then((resp) => {
+        if (!resp.StatusOK()) {
+          this.showLoading = false;
+          throw new Error(resp.Status());
+        }
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
-
-        this.sanitize();
-
         this.showLoading = false;
         this.Success(resp.data);
-      });
+      }).catch(err);
     }
   }
 };

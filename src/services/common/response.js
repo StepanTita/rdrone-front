@@ -12,4 +12,8 @@ export class Response {
     StatusCritical() {
         return this.status >= 500;
     }
+
+    Status() {
+        return this.msg
+    }
 }

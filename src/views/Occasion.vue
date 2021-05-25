@@ -74,7 +74,6 @@ export default {
     this.occasionsQuerier.getOccasion(this.$route.params.occasion_id).then((resp) => {
       EventBus.$emit(SHOW_ALERT_EVENT, resp);
       this.occasion = resp.data;
-      console.log([{url: this.occasion.image}]);
       this.showLoading = false;
     });
   },

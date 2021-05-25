@@ -18,6 +18,7 @@ import MapConfig from "@/assets/map-config.json";
 import {IncidentsQuerier} from "@/services/incidents/incidentsQuerier";
 import {OccasionData} from "@/services/map/occasion";
 import {IncidentData} from "@/services/map/incident";
+import {err} from "@/services/common/errors";
 
 export default {
   name: 'Home',
@@ -42,20 +43,28 @@ export default {
       const center = await this.locator.getPosition();
 
       this.occasionsQuerier.getOccasions().then((resp) => {
+        if (!resp.StatusOK()) {
+          this.showLoading = false;
+          throw new Error(resp.Status());
+        }
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
         for (let o of resp.data) {
           this.occasions.push(new Marker(o.id, latLng({lat: o.lat, lng: o.lng}), new OccasionData(o)));
         }
         this.occasions.push(new Marker(1, latLng({lat: center.lat, lng: center.lng})));
-      });
+      }).catch(err);
     },
 
     async updateIncidents() {
       this.incidentsQuerier.getIncidents().then((resp) => {
+        if (!resp.StatusOK()) {
+          this.showLoading = false;
+          throw new Error(resp.Status());
+        }
         for (let o of resp.data) {
           this.incidents.push(new Marker(o.id, latLng({lat: o.lat, lng: o.lng}), new IncidentData(o)));
         }
-      });
+      }).catch(err);
     }
   },
   components: {

@@ -50,6 +50,7 @@ import {EventBus} from "@/services/common/eventBus";
 import {END_CREATE_COMMENT_EVENT, SHOW_ALERT_EVENT, UPDATE_COMMENTS_EVENT} from "@/services/common/events";
 import {Toast} from "vant";
 import {CommentsQuerier} from "@/services/comments/comments";
+import {err} from "@/services/common/errors";
 
 export default {
   Name: 'CreateComment',
@@ -73,13 +74,12 @@ export default {
       Toast.success('Success');
 
       this.commentQuerier.createComment(values).then((resp) => {
-        // todo: make decorator
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
         if (resp.StatusOK()) {
           this.toggleOverlay();
           EventBus.$emit(UPDATE_COMMENTS_EVENT);
         }
-      });
+      }).catch(err);
     },
     onFailed() {
       Toast.fail('Fail');
