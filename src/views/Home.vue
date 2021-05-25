@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Map v-bind:occasions="occasions"/>
+    <Map v-bind:occasions="occasions" v-bind:incidents="incidents"/>
   </div>
 </template>
 
@@ -14,19 +14,26 @@ import {Locator} from "@/services/locator";
 import {Marker} from "@/services/map/marker";
 // todo use google method
 import {latLng} from "leaflet/dist/leaflet-src.esm";
+import MapConfig from "@/assets/map-config.json";
+import {IncidentsQuerier} from "@/services/incidents/incidentsQuerier";
 
 export default {
   name: 'Home',
   data() {
     return {
-      occasions: []
+      occasions: [],
+      incidents: [],
     };
   },
   async mounted() {
     this.occasionsQuerier = new OccasionsQuerier();
     await this.updateOccasions();
+
+    this.incidentsQuerier = new IncidentsQuerier(MapConfig.incidentsBoundingBox);
+    await this.updateIncidents();
   },
   methods: {
+    // todo: refactor to single method for all queriers
     async updateOccasions() {
       // todo: remove
       this.locator = new Locator();
@@ -38,6 +45,14 @@ export default {
           this.occasions.push(new Marker(o.id, latLng({lat: o.lat, lng: o.lng}), o));
         }
         this.occasions.push(new Marker(1, latLng({lat: center.lat, lng: center.lng})));
+      });
+    },
+
+    async updateIncidents() {
+      this.incidentsQuerier.getIncidents().then((resp) => {
+        for (let o of resp.data) {
+          this.incidents.push(new Marker(o.id, latLng({lat: o.lat, lng: o.lng}), o));
+        }
       });
     }
   },

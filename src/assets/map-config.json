@@ -5,7 +5,7 @@
     "lat": 49.99,
     "lon": 36.23
   },
-  "incidentsBoundingBox": "39.95,-105.25,39.52,-104.71",
+  "incidentsBoundingBox": "39.95,-105.25,39.52,-105.71",
   "zoom": 13,
   "mapOptions": {
     "zoomSnap": 0.5,

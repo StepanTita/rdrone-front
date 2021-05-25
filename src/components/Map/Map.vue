@@ -35,7 +35,8 @@
           :draggable="false"
           @click="openOccasionInfo(m)"
       />
-      <info-window v-bind:info-window="infoWindow" v-bind:options="infoWindowOptions"/>
+      <info-window v-bind:info-window="infoWindowOccasions" v-bind:options="infoWindowOptions"/>
+      <info-window v-bind:info-window="infoWindowIncidents" v-bind:options="infoWindowOptions"/>
 
       <GmapMarker
           v-if="newOccasion"
@@ -91,13 +92,13 @@ import Vue from "vue";
 import arrive from "arrive";
 import ControlMode from "@/components/Map/ControlMode";
 import {EventBus} from "@/services/common/eventBus";
-import {ADD_NEW_OCCASION_EVENT} from "@/services/common/events";
 
 export default {
   name: 'Map',
   components: {ControlDetailedRoute, InfoWindow},
   props: {
-    occasions: Array
+    occasions: Array,
+    incidents: Array,
   },
   updated() {
     if (this.showDirections) {
@@ -153,7 +154,8 @@ export default {
       occasionImgUrl: MapConfig.occasionPinImgUrl,
 
       // info window
-      infoWindow: null,
+      infoWindowOccasions: null,
+      infoWindowIncidents: null,
       infoWindowOptions: {
         open: false,
         infoOptions: {
@@ -208,7 +210,7 @@ export default {
     },
     openOccasionInfo(o) {
       this.center = o.Position();
-      this.infoWindow = o;
+      this.infoWindowOccasions = o;
       this.infoWindowOptions.open = true;
     },
 
