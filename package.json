@@ -17,7 +17,8 @@
     "vant": "^2.12.19",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
-    "vue2-google-maps": "^0.10.7"
+    "vue2-google-maps": "^0.10.7",
+    "vuelidate": "^0.7.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

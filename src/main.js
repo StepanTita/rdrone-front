@@ -7,9 +7,11 @@ import 'vant/lib/index.css';
 import * as VueGoogleMaps from 'vue2-google-maps';
 import {Locale} from 'vant';
 import enUS from 'vant/es/locale/lang/en-US';
+import Vuelidate from 'vuelidate';
 import config from '@/assets/config.json';
 
 Vue.use(Vant);
+Vue.use(Vuelidate);
 Vue.use(VueGoogleMaps, {
     load: {
         // key: config.google_api_key,

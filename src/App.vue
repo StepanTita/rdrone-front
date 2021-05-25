@@ -8,7 +8,7 @@
         title="RDrONE"
     />
     <router-view/>
-    <van-tabbar v-model="active">
+    <van-tabbar v-model="active" v-show="signedIn">
       <van-tabbar-item icon="home-o" @click="navigate('/')">Home</van-tabbar-item>
       <van-tabbar-item icon="plus" @click="navigateWithQuery('/occasion/add', newOccasion)">Add</van-tabbar-item>
       <van-tabbar-item icon="setting-o">Settings</van-tabbar-item>
@@ -22,7 +22,7 @@ import {AlertService} from "@/services/alerts/alerts";
 import * as Events from "@/services/common/events";
 import {EventBus} from "@/services/common/eventBus";
 import {Toast} from "vant";
-import {SHOW_ALERT_EVENT} from "@/services/common/events";
+import {SHOW_ALERT_EVENT, USER_SIGNED_IN_EVENT} from "@/services/common/events";
 
 export default {
   name: 'rdrone-app',
@@ -34,13 +34,18 @@ export default {
       currActive: 0,
       showAlert: false,
 
-      newOccasion: null
+      newOccasion: null,
+
+      signedIn: false,
     };
   },
   created() {
     EventBus.$on(Events.SHOW_ALERT_EVENT, this.setupAlert);
     EventBus.$on(Events.ADD_NEW_OCCASION_EVENT, o => {
       this.newOccasion = o;
+    });
+    EventBus.$on(Events.USER_SIGNED_IN_EVENT, () => {
+      this.signedIn = true;
     });
   },
   mounted() {
@@ -101,5 +106,9 @@ export default {
 /*.van-hairline--top-bottom.van-tabbar.van-tabbar--fixed {*/
 /*  position: relative !important;*/
 /*}*/
+
+*:focus {
+  outline: none;
+}
 
 </style>

@@ -15,11 +15,11 @@ export class FirebaseImageUploader {
         }
     }
 
-    async Upload(img) {
+    async Upload(path, img) {
         let picture;
         await new Promise((resolve, reject) => {
             console.log(uuidv4() + img.name);
-            const storageRef = firebase.storage().ref(`raw/${uuidv4() + img.name}`).put(img);
+            const storageRef = firebase.storage().ref(`${path}/${uuidv4() + img.name}`).put(img);
 
             storageRef.on(`state_changed`, snapshot => {
                     console.log((snapshot.bytesTransferred / snapshot.totalBytes) * 100);

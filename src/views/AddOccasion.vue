@@ -72,6 +72,7 @@ import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {FirebaseImageUploader} from "@/services/firebase";
 import {OccasionsQuerier} from "@/services/occasions/occasions";
 import {Toast} from "vant";
+import config from "@/assets/config.json"
 
 export default {
   name: 'AddOccasionContainer',
@@ -101,9 +102,9 @@ export default {
       for (const [i, result] of resp.data.entries()) {
         this.addresses.push(result.formatted_address);
       }
-      this.firebaseImageUploader = new FirebaseImageUploader();
     });
 
+    this.firebaseImageUploader = new FirebaseImageUploader();
     this.occasionsQuerier = new OccasionsQuerier();
   },
   methods: {
@@ -120,7 +121,6 @@ export default {
     },
     async onSubmit(values) {
       this.showLoading = true;
-      console.log(values);
       const [lat, lng] = this.$route.query.latLng.split(',');
       const imgUrl = await this.uploadImage();
       this.occasionsQuerier.createOccasion({
@@ -144,7 +144,8 @@ export default {
       }
       this.uploader[0].status = 'uploading';
       this.uploader[0].message = 'Uploading...';
-      const imgUrl = await this.firebaseImageUploader.Upload(this.uploader[0].file);
+      // upload to the folder with raw images
+      const imgUrl = await this.firebaseImageUploader.Upload(config.firebase_raw_path, this.uploader[0].file);
       this.uploader[0].status = '';
       this.uploader[0].message = '';
       return imgUrl;
