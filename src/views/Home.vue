@@ -8,7 +8,7 @@
 // @ is an alias to /src
 import Map from "@/components/Map/Map";
 import {EventBus} from "@/services/common/eventBus";
-import {SHOW_ALERT_EVENT} from "@/services/common/events";
+import {SHOW_ALERT_EVENT, UPDATE_ACTIVE_TAB_EVENT} from "@/services/common/events";
 import {OccasionsQuerier} from "@/services/occasions/occasionsQuerier";
 import {Locator} from "@/services/locator";
 import {Marker} from "@/services/map/marker";
@@ -27,6 +27,9 @@ export default {
       occasions: [],
       incidents: [],
     };
+  },
+  updated() {
+    EventBus.$emit(UPDATE_ACTIVE_TAB_EVENT, 0);
   },
   async mounted() {
     this.occasionsQuerier = new OccasionsQuerier();

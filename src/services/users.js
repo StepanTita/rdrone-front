@@ -1,6 +1,5 @@
 import axios from "axios";
 import config from "@/assets/config.json";
-import {err} from "@/services/common/errors";
 import {Response} from "@/services/common/response";
 
 const baseEndpoint = "users";
@@ -32,6 +31,17 @@ export class UsersQuerier {
         data = this.sanitize(data);
         return new Promise((resolve, reject) => {
             axios.post(config.api + baseEndpoint, data).then((resp) => {
+                resolve(new Response(resp.data, resp.status, resp.statusText));
+            }).catch((e) => {
+                reject(new Response(e.response.data, e.response.status, e.response.statusText));
+            });
+        });
+    }
+
+    updateUser(data) {
+        data = this.sanitize(data);
+        return new Promise((resolve, reject) => {
+            axios.put(config.api + baseEndpoint, data).then((resp) => {
                 resolve(new Response(resp.data, resp.status, resp.statusText));
             }).catch((e) => {
                 reject(new Response(e.response.data, e.response.status, e.response.statusText));

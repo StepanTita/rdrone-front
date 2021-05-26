@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     Success(user) {
-      localStorage.setItem(USER_DATA_KEY, user);
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
       this.$router.push('/');
     },
     onSubmit(values) {

@@ -14,7 +14,7 @@ Vue.use(Vant);
 Vue.use(Vuelidate);
 Vue.use(VueGoogleMaps, {
     load: {
-        key: config.google_api_key,
+        // key: config.google_api_key,
         libraries: 'places,directions',
     },
 });

@@ -22,7 +22,12 @@ import {AlertService} from "@/services/alerts/alerts";
 import * as Events from "@/services/common/events";
 import {EventBus} from "@/services/common/eventBus";
 import {Toast} from "vant";
-import {SHOW_ALERT_EVENT, USER_SIGNED_IN_EVENT} from "@/services/common/events";
+import {
+  SHOW_ALERT_EVENT,
+  UPDATE_ACTIVE_TAB_EVENT,
+  UPDATE_COMMENTS_EVENT,
+  USER_SIGNED_IN_EVENT
+} from "@/services/common/events";
 
 export default {
   name: 'rdrone-app',
@@ -40,16 +45,21 @@ export default {
     };
   },
   created() {
+    // todo refactor to pass object on which to execute
     EventBus.$on(Events.SHOW_ALERT_EVENT, this.setupAlert);
+    EventBus.$on(UPDATE_ACTIVE_TAB_EVENT, (tab) => {
+      this.active = tab;
+      this.currActive = tab;
+    });
     EventBus.$on(Events.ADD_NEW_OCCASION_EVENT, o => {
       this.newOccasion = o;
     });
   },
   updated() {
-    this.signedIn = !!localStorage.getItem('USER_DATA')
+    this.signedIn = !!localStorage.getItem('USER_DATA');
   },
   mounted() {
-    this.signedIn = !!localStorage.getItem('USER_DATA')
+    this.signedIn = !!localStorage.getItem('USER_DATA');
     this.alertService = new AlertService();
   },
   methods: {
@@ -72,7 +82,7 @@ export default {
         console.log({latLng: `${marker.latLng.lat()},${marker.latLng.lng()}`});
         this.$router.push({path: path, query: {latLng: `${marker.latLng.lat()},${marker.latLng.lng()}`}});
         this.currActive = this.active;
-        return
+        return;
       }
       this.active = this.currActive;
       Toast.fail('You must choose new occasion location first');

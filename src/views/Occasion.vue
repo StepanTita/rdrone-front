@@ -57,7 +57,7 @@
 
 import {OccasionsQuerier} from "@/services/occasions/occasionsQuerier";
 import {EventBus} from "@/services/common/eventBus";
-import {SHOW_ALERT_EVENT} from "@/services/common/events";
+import {SHOW_ALERT_EVENT, UPDATE_ACTIVE_TAB_EVENT} from "@/services/common/events";
 import {ImagePreview} from "vant";
 
 export default {
@@ -67,6 +67,9 @@ export default {
       showLoading: true,
       occasion: null,
     };
+  },
+  updated() {
+    EventBus.$emit(UPDATE_ACTIVE_TAB_EVENT, 1);
   },
   mounted() {
     this.occasionsQuerier = new OccasionsQuerier();
