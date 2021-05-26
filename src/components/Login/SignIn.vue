@@ -34,7 +34,7 @@
 import {EventBus} from "@/services/common/eventBus";
 import * as Events from "@/services/common/events";
 import {required, or, email, alphaNum} from 'vuelidate/lib/validators';
-import {USER_DATA_KEY} from "@/services/common/storate";
+import {USER_DATA_KEY} from "@/services/common/storage";
 import {Toast} from "vant";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {err} from "@/services/common/errors";
@@ -340,6 +340,13 @@ img {
   font-size: 50px;
 
   /*box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);*/
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .is-invalid {

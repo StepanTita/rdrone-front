@@ -55,7 +55,7 @@
 <script>
 // @ is an alias to /src
 
-import {OccasionsQuerier} from "@/services/occasions/occasions";
+import {OccasionsQuerier} from "@/services/occasions/occasionsQuerier";
 import {EventBus} from "@/services/common/eventBus";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {ImagePreview} from "vant";
@@ -68,8 +68,7 @@ export default {
       occasion: null,
     };
   },
-  async mounted() {
-    console.log(this.$route.params.occasion_id);
+  mounted() {
     this.occasionsQuerier = new OccasionsQuerier();
     this.occasionsQuerier.getOccasion(this.$route.params.occasion_id).then((resp) => {
       EventBus.$emit(SHOW_ALERT_EVENT, resp);

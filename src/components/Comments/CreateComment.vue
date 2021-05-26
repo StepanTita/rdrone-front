@@ -34,7 +34,7 @@
                 :rules="[{ required: true, message: 'Text is required' }]"
             />
             <div style="margin: 16px;">
-              <van-button round block type="info" native-type="submit">
+              <van-button round block type="info" native-type="submit" :disabled="disableSubmit">
                 Submit
               </van-button>
             </div>
@@ -60,7 +60,9 @@ export default {
   },
   data() {
     return {
-      commentText: ''
+      commentText: '',
+
+      disableSubmit: false,
     };
   },
   mounted() {
@@ -72,16 +74,21 @@ export default {
     },
     toggleOverlay() {
       EventBus.$emit(END_CREATE_COMMENT_EVENT);
+      this.disableSubmit = false;
     },
-    async onSubmit(values) {
+    onSubmit(values) {
+      this.disableSubmit = true;
       this.commentQuerier.createComment(values).then((resp) => {
-        EventBus.$emit(SHOW_ALERT_EVENT, resp);
-        if (resp.StatusOK()) {
-          Toast.success('Success');
-          this.toggleOverlay();
-          EventBus.$emit(UPDATE_COMMENTS_EVENT);
+        if (!resp.StatusOK()) {
+          Promise.reject(resp.Status());
         }
-      }).catch(err);
+        EventBus.$emit(SHOW_ALERT_EVENT, resp);
+        Toast.success('Success');
+        this.toggleOverlay();
+        EventBus.$emit(UPDATE_COMMENTS_EVENT);
+      }).catch(err).finally(() => {
+        this.sanitize();
+      });
     },
     onFailed() {
       Toast.fail('Fail');

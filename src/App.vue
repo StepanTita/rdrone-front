@@ -36,8 +36,7 @@ export default {
 
       newOccasion: null,
 
-      // todo: return
-      signedIn: true,
+      signedIn: false,
     };
   },
   created() {
@@ -45,11 +44,9 @@ export default {
     EventBus.$on(Events.ADD_NEW_OCCASION_EVENT, o => {
       this.newOccasion = o;
     });
-    EventBus.$on(Events.USER_SIGNED_IN_EVENT, () => {
-      this.signedIn = true;
-    });
   },
   mounted() {
+    this.signedIn = !!localStorage.getItem('USER_DATA')
     this.alertService = new AlertService();
   },
   methods: {

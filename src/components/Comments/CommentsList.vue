@@ -9,7 +9,7 @@
               <van-button icon="plus" color="#17a2b8" v-on:click="newComment"/>
             </div>
             <div v-for="comment in comments" v-bind:key="comment.id" class="card p-3 mt-2">
-              <div v-if="comment.replyTo > comments.length">
+              <div v-if="!(reply = includes(comment.replyTo))">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="user d-flex flex-row align-items-center"><img v-bind:src="comment.avatar" width="30"
                                                                             class="user-img rounded-circle mr-2">
@@ -20,15 +20,16 @@
                   <small>3 days ago</small>
                 </div>
                 <div class="action d-flex justify-content-between mt-2 align-items-center">
-                  <div class="reply px-4"><small>Remove</small> <span class="dots"></span> <small @click="createReply(comment)">Reply</small> <span
+                  <div class="reply px-4"><small
+                      @click="createReply(comment)">Reply</small> <span
                       class="dots"></span> <small>Translate</small></div>
-                  <div class="icons align-items-center"><i class="fa fa-user-plus text-muted"></i> <i
-                      class="fa fa-star-o text-muted"></i> <i class="fa fa-star text-warning"></i> <i
-                      class="fa fa-check-circle-o check-icon text-primary"></i></div>
+<!--                  <div class="icons align-items-center"><i class="fa fa-user-plus text-muted"></i> <i-->
+<!--                      class="fa fa-star-o text-muted"></i> <i class="fa fa-star text-warning"></i> <i-->
+<!--                      class="fa fa-check-circle-o check-icon text-primary"></i></div>-->
                 </div>
               </div>
               <div v-else>
-                <p class="text">Commented on {{ comments[comment.replyTo].name }}</p>
+                <p class="text">Commented on {{ reply.name }}</p>
                 <div class="d-flex justify-content-between align-items-center reply-comment">
                   <div class="user d-flex flex-row align-items-center"><img v-bind:src="comment.avatar" width="30"
                                                                             class="user-img rounded-circle mr-2">
@@ -39,11 +40,12 @@
                   <small>3 days ago</small>
                 </div>
                 <div class="action d-flex justify-content-between mt-2 align-items-center">
-                  <div class="reply px-4"><small>Remove</small> <span class="dots"></span> <small @click="createReply(comment)">Reply</small> <span
+                  <div class="reply px-4"><small
+                      @click="createReply(comment)">Reply</small> <span
                       class="dots"></span> <small>Translate</small></div>
-                  <div class="icons align-items-center"><i class="fa fa-user-plus text-muted"></i> <i
-                      class="fa fa-star-o text-muted"></i> <i class="fa fa-star text-warning"></i> <i
-                      class="fa fa-check-circle-o check-icon text-primary"></i></div>
+<!--                  <div class="icons align-items-center"><i class="fa fa-user-plus text-muted"></i> <i-->
+<!--                      class="fa fa-star-o text-muted"></i> <i class="fa fa-star text-warning"></i> <i-->
+<!--                      class="fa fa-check-circle-o check-icon text-primary"></i></div>-->
                 </div>
               </div>
             </div>
@@ -74,12 +76,12 @@ export default {
       overlay: false,
       isLoading: false,
       replyTo: {},
-    }
+    };
   },
   methods: {
     newComment() {
       this.replyTo = null;
-      this.toggleCreateComment()
+      this.toggleCreateComment();
     },
     toggleCreateComment() {
       this.overlay = !this.overlay;
@@ -91,9 +93,17 @@ export default {
     onRefresh() {
       EventBus.$emit(UPDATE_COMMENTS_EVENT);
       this.isLoading = false;
+    },
+    includes(val) {
+      for (let c of this.comments) {
+        if (c.id === val) {
+          return c;
+        }
+      }
+      return null;
     }
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

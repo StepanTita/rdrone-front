@@ -22,7 +22,7 @@ export default {
   created() {
     EventBus.$on(UPDATE_COMMENTS_EVENT, this.updateComments)
   },
-  async mounted() {
+  mounted() {
     this.commentQuerier = new CommentsQuerier();
     this.updateComments();
   },
@@ -30,7 +30,7 @@ export default {
     updateComments() {
       this.commentQuerier.getComments().then((resp) => {
         if (!resp.StatusOK()) {
-          throw new Error(resp.Status());
+          Promise.reject(resp.Status());
         }
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
         this.comments = resp.data;

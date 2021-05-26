@@ -101,7 +101,7 @@ import {FirebaseImageUploader} from "@/services/firebase";
 import config from "@/assets/config.json";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {UsersQuerier} from "@/services/users";
-import {USER_DATA_KEY} from "@/services/common/storate";
+import {USER_DATA_KEY} from "@/services/common/storage";
 import {err} from "@/services/common/errors";
 
 export default {
@@ -157,7 +157,7 @@ export default {
       localStorage.setItem(USER_DATA_KEY, user);
       this.$router.push('/');
     },
-    async onSubmit(values) {
+    onSubmit(values) {
       this.$v.$touch();
       if (this.$v.$invalid) {
         Toast.fail('Please, fill the form correctly...');
@@ -180,7 +180,6 @@ export default {
           }
           Toast.success("Success");
           EventBus.$emit(SHOW_ALERT_EVENT, resp);
-
           this.Success(resp.data);
         });
       }).catch(err).finally(() => {

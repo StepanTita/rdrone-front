@@ -9,7 +9,7 @@
 import Map from "@/components/Map/Map";
 import {EventBus} from "@/services/common/eventBus";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
-import {OccasionsQuerier} from "@/services/occasions/occasions";
+import {OccasionsQuerier} from "@/services/occasions/occasionsQuerier";
 import {Locator} from "@/services/locator";
 import {Marker} from "@/services/map/marker";
 // todo use google method
@@ -33,7 +33,7 @@ export default {
     await this.updateOccasions();
 
     this.incidentsQuerier = new IncidentsQuerier(MapConfig.incidentsBoundingBox);
-    await this.updateIncidents();
+    this.updateIncidents();
   },
   methods: {
     // todo: refactor to single method for all queriers
@@ -44,8 +44,7 @@ export default {
 
       this.occasionsQuerier.getOccasions().then((resp) => {
         if (!resp.StatusOK()) {
-          this.showLoading = false;
-          throw new Error(resp.Status());
+          Promise.reject(resp.Status());
         }
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
         for (let o of resp.data) {
@@ -55,11 +54,10 @@ export default {
       }).catch(err);
     },
 
-    async updateIncidents() {
+    updateIncidents() {
       this.incidentsQuerier.getIncidents().then((resp) => {
         if (!resp.StatusOK()) {
-          this.showLoading = false;
-          throw new Error(resp.Status());
+          Promise.reject(resp.Status());
         }
         for (let o of resp.data) {
           this.incidents.push(new Marker(o.id, latLng({lat: o.lat, lng: o.lng}), new IncidentData(o)));

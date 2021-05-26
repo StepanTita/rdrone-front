@@ -1,18 +1,19 @@
 <template>
   <div class="about">
     <!-- Error -->
-    <van-empty image="error" description="Description" />
+    <van-empty image="error" description="Description"/>
     <!-- Network -->
-<!--    <van-empty image="network" description="Description" />-->
+    <!--    <van-empty image="network" description="Description" />-->
     <!-- Search -->
-<!--    <van-empty image="search" description="Description" />-->
-    <router-link plain hairline icon="home" to="/"><van-button plain type="info">Home...</van-button></router-link>
+    <!--    <van-empty image="search" description="Description" />-->
+    <router-link plain hairline icon="home" to="/">
+      <van-button plain type="info">Home...</van-button>
+    </router-link>
   </div>
 </template>
 
 <script>
-export default {
-};
+export default {};
 </script>
 
 

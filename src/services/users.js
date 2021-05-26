@@ -4,7 +4,7 @@ import {err} from "@/services/common/errors";
 import {Response} from "@/services/common/response";
 
 const baseEndpoint = "users";
-const fetchUserEndpoint = "/login"
+const fetchUserEndpoint = "/login";
 
 export class UsersQuerier {
     // todo type conversion
@@ -13,16 +13,29 @@ export class UsersQuerier {
     }
 
     // todo use f-strings
-    async getUser(credentials) {
-        let resp = await axios.post(config.api + baseEndpoint + fetchUserEndpoint, credentials).catch((e) => {
-
+    getUser(credentials) {
+        return new Promise((resolve, reject) => {
+            axios.post(config.api + baseEndpoint + fetchUserEndpoint, credentials).then((resp) => {
+                resolve(new Response(resp.data, resp.status, resp.statusText));
+            }).catch((e) => {
+                if (e.response.status === 404) {
+                    reject(new Response(e.response.data, e.response.status, "User not found"));
+                } else if (e.response.status === 400) {
+                    reject(new Response(e.response.data, e.response.status, "Incorrect login or password"));
+                }
+                reject(new Response(e.response.data, e.response.status, e.response.statusText));
+            });
         });
-        return new Response(resp.data, resp.status, resp.statusText);
     }
 
-    async createUser(data) {
+    createUser(data) {
         data = this.sanitize(data);
-        let resp = await axios.post(config.api + baseEndpoint, data).catch(err);
-        return new Response(resp.data, resp.status, resp.statusText);
+        return new Promise((resolve, reject) => {
+            axios.post(config.api + baseEndpoint, data).then((resp) => {
+                resolve(new Response(resp.data, resp.status, resp.statusText));
+            }).catch((e) => {
+                reject(new Response(e.response.data, e.response.status, e.response.statusText));
+            });
+        });
     }
 }

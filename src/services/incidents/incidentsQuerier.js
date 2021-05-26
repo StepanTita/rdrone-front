@@ -9,15 +9,20 @@ export class IncidentsQuerier {
         this.boundingBox = boundingBox;
     }
 
-    async getIncidents() {
+    getIncidents() {
+        // todo: add config
         let data = {
             boundingBox: this.boundingBox,
             key: config.map_quest_api_key,
             filters: "construction,incidents",
             outFormat: "json"
         };
-        let resp = await axios.get(config.map_quest_api + '?' + encodeQueryData(data)).catch(err);
-        console.log(resp);
-        return new Response(resp.data.incidents.slice(0, 10), resp.status, resp.statusText);
+        return new Promise((resolve, reject) => {
+            axios.get(config.map_quest_api + '?' + encodeQueryData(data)).then((resp) => {
+                resolve(new Response(resp.data.incidents.slice(0, 10), resp.status, resp.statusText));
+            }).catch((e) => {
+                reject(new Response(e.response.data, e.response.status, e.response.statusText));
+            });
+        });
     }
 }

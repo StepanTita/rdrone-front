@@ -70,7 +70,7 @@ import {ReverseGeocoding} from "@/services/geocoding/reverseGeocoding";
 import {EventBus} from "@/services/common/eventBus";
 import {SHOW_ALERT_EVENT} from "@/services/common/events";
 import {FirebaseImageUploader} from "@/services/firebase";
-import {OccasionsQuerier} from "@/services/occasions/occasions";
+import {OccasionsQuerier} from "@/services/occasions/occasionsQuerier";
 import {Toast} from "vant";
 import config from "@/assets/config.json";
 import {err} from "@/services/common/errors";
@@ -98,12 +98,12 @@ export default {
   },
   mounted() {
     this.reverseGeocoding = new ReverseGeocoding();
-    this.reverseGeocoding.getAddress(this.$route.query.latLng).catch(err).then((resp) => {
+    this.reverseGeocoding.getAddress(this.$route.query.latLng).then((resp) => {
       EventBus.$emit(SHOW_ALERT_EVENT, resp);
       for (const [i, result] of resp.data.entries()) {
         this.addresses.push(result.formatted_address);
       }
-    });
+    }).catch(err);
 
     this.firebaseImageUploader = new FirebaseImageUploader();
     this.occasionsQuerier = new OccasionsQuerier();
@@ -113,7 +113,7 @@ export default {
       this.chosenAddress = value;
       this.showPicker = false;
     },
-    async onSubmit(values) {
+    onSubmit(values) {
       this.showLoading = true;
       const [lat, lng] = this.$route.query.latLng.split(',');
       this.uploadImage(values.username).then((url) => {
@@ -133,6 +133,7 @@ export default {
           EventBus.$emit(SHOW_ALERT_EVENT, resp);
         })
       }).catch(err).finally(() => {
+        this.sanitize();
         this.resetLoading();
       });
     },
