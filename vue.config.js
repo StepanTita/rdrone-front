@@ -7,7 +7,7 @@ module.exports = {
         themeColor: '#FFF',
         msTileColor: '#FFF',
         appleMobileWebAppCapable: 'yes',
-        appleMobileWebAppStatusBarStyle: 'white',
+        appleMobileWebAppStatusBarStyle: 'default',
 
         // настройки манифеста
         manifestOptions: {
