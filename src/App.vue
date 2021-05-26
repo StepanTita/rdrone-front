@@ -11,7 +11,7 @@
     <van-tabbar v-model="active" v-show="signedIn">
       <van-tabbar-item icon="home-o" @click="navigate('/')">Home</van-tabbar-item>
       <van-tabbar-item icon="plus" @click="navigateWithQuery('/occasion/add', newOccasion)">Add</van-tabbar-item>
-      <van-tabbar-item icon="setting-o">Settings</van-tabbar-item>
+      <van-tabbar-item icon="setting-o" @click="navigate('/settings')">Settings</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>
@@ -45,6 +45,9 @@ export default {
       this.newOccasion = o;
     });
   },
+  updated() {
+    this.signedIn = !!localStorage.getItem('USER_DATA')
+  },
   mounted() {
     this.signedIn = !!localStorage.getItem('USER_DATA')
     this.alertService = new AlertService();
@@ -61,6 +64,7 @@ export default {
     },
 
     navigate(path) {
+      this.currActive = this.active;
       this.$router.push(path);
     },
     navigateWithQuery(path, marker) {

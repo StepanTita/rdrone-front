@@ -1,26 +1,40 @@
 <template>
-  <div class="about">
-    <!-- Error -->
-    <van-empty image="error" description="Description"/>
-    <!-- Network -->
-    <!--    <van-empty image="network" description="Description" />-->
-    <!-- Search -->
-    <!--    <van-empty image="search" description="Description" />-->
-    <router-link plain hairline icon="home" to="/">
-      <van-button plain type="info">Home...</van-button>
-    </router-link>
+  <div class="settings">
+    <van-divider><h3>Settings</h3></van-divider>
+    <van-collapse v-model="activeNames">
+      <van-collapse-item title="Personal" name="personal">
+
+      </van-collapse-item>
+      <van-collapse-item title="View" name="view">View</van-collapse-item>
+      <van-collapse-item title="Info" name="info">Info</van-collapse-item>
+      <van-collapse-item title="Login" name="login">
+        <van-button type="info" @click="logout">
+          <van-icon name="revoke" /> Logout
+        </van-button>
+      </van-collapse-item>
+    </van-collapse>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  Name: 'Settings',
+  data() {
+    return {
+      activeNames: [
+          'personal'
+      ],
+    };
+  },
+  methods: {
+    logout() {
+      localStorage.clear();
+      this.$router.push('/');
+    }
+  }
+};
 </script>
 
 
 <style scoped>
-.about {
-  margin-top: 15%;
-  font-family: 'KoHo', sans-serif;
-  color: #a8a8a8;
-}
 </style>

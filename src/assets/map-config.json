@@ -13,7 +13,7 @@
     "zoomControl": true,
     "mapTypeControl": false,
     "mapTypeControlOptions": {
-      "style": "HORIZONTAL_BAR",
+      "style": "DROPDOWN_MENU",
       "position": "TOP_CENTER"
     },
     "scaleControl": false,

@@ -9,6 +9,7 @@ import {USER_DATA_KEY} from "@/services/common/storage";
 import {EventBus} from "@/services/common/eventBus";
 import * as Events from "@/services/common/events";
 import Login from "@/views/Login";
+import Settings from "@/views/Settings";
 
 Vue.use(VueRouter);
 
@@ -50,6 +51,11 @@ const routes = [
         name: 'Details',
         component: Occasion
     },
+    {
+        path: '/settings',
+        name: 'Settings',
+        component: Settings
+    },
 ];
 
 const router = new VueRouter({
@@ -58,7 +64,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     // localStorage.clear();
-    let isAuthenticated = false
+    let isAuthenticated = false;
     isAuthenticated = !!localStorage.getItem(USER_DATA_KEY);
     if (to.name === 'SignUp') {
         next();

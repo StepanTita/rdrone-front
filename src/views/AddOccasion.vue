@@ -131,15 +131,15 @@ export default {
           }
           Toast.success("Success");
           EventBus.$emit(SHOW_ALERT_EVENT, resp);
-        })
-      }).catch(err).finally(() => {
-        this.sanitize();
-        this.resetLoading();
-      });
+        }).finally(() => {
+          this.sanitize();
+          this.resetLoading();
+        });
+      }).catch(err);
     },
     uploadImage() {
       if (this.uploader.length < 1) {
-        return '';
+        return new Promise((resolve, reject) => resolve(''));
       }
       for (let up of this.uploader) {
         up.status = 'uploading';

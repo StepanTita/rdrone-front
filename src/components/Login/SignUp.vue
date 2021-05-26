@@ -181,10 +181,10 @@ export default {
           Toast.success("Success");
           EventBus.$emit(SHOW_ALERT_EVENT, resp);
           this.Success(resp.data);
+        }).finally(() => {
+          this.resetLoading();
         });
-      }).catch(err).finally(() => {
-        this.resetLoading();
-      });
+      }).catch(err);
     },
     onOversize(file) {
       console.log(file);
@@ -192,7 +192,7 @@ export default {
     },
     uploadImage(user) {
       if (this.uploader.length < 1) {
-        return '';
+        return new Promise((resolve, reject) => resolve(''));
       }
       for (let up of this.uploader) {
         up.status = 'uploading';
