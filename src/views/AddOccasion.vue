@@ -109,13 +109,6 @@ export default {
     this.occasionsQuerier = new OccasionsQuerier();
   },
   methods: {
-    sanitize() {
-      this.chosenAddress = '';
-      this.title = '';
-      this.description = '';
-      this.severity = 0;
-      this.uploader = [];
-    },
     onConfirm(value) {
       this.chosenAddress = value;
       this.showPicker = false;
@@ -123,37 +116,52 @@ export default {
     async onSubmit(values) {
       this.showLoading = true;
       const [lat, lng] = this.$route.query.latLng.split(',');
-      const imgUrl = await this.uploadImage();
-      this.occasionsQuerier.createOccasion({
-        image: imgUrl,
-        title: values.title,
-        address: values.address,
-        lat: lat,
-        lng: lng,
-        description: values.description,
-        severity: values.severity
-      }).then((resp) => {
-        if (!resp.StatusOK()) {
-          throw new Error(resp.Status());
-        }
-        Toast.success("Success");
-        EventBus.$emit(SHOW_ALERT_EVENT, resp);
+      this.uploadImage(values.username).then((url) => {
+        this.occasionsQuerier.createOccasion({
+          image: url,
+          title: values.title,
+          address: values.address,
+          lat: lat,
+          lng: lng,
+          description: values.description,
+          severity: values.severity
+        }).then((resp) => {
+          if (!resp.StatusOK()) {
+            Promise.reject(resp.Status());
+          }
+          Toast.success("Success");
+          EventBus.$emit(SHOW_ALERT_EVENT, resp);
+        })
       }).catch(err).finally(() => {
-        this.showLoading = false;
-        this.sanitize();
+        this.resetLoading();
       });
     },
-    async uploadImage() {
+    uploadImage() {
       if (this.uploader.length < 1) {
         return '';
       }
-      this.uploader[0].status = 'uploading';
-      this.uploader[0].message = 'Uploading...';
-      // upload to the folder with raw images
-      const imgUrl = await this.firebaseImageUploader.Upload(config.firebase_raw_path, this.uploader[0].file);
-      this.uploader[0].status = '';
-      this.uploader[0].message = '';
-      return imgUrl;
+      for (let up of this.uploader) {
+        up.status = 'uploading';
+        up.message = 'Uploading...';
+      }
+      return this.firebaseImageUploader.upload(config.firebase_raw_path, this.uploader[0].file);
+    },
+    sanitize() {
+      this.chosenAddress = '';
+      this.title = '';
+      this.description = '';
+      this.severity = 0;
+      this.uploader = [];
+    },
+    resetLoading() {
+      this.showLoading = false;
+      if (this.uploader.length > 0) {
+        for (let up of this.uploader) {
+          up.status = '';
+          up.message = '';
+        }
+        this.showLoading = false;
+      }
     }
   }
 };

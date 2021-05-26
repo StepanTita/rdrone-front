@@ -67,15 +67,17 @@ export default {
     this.commentQuerier = new CommentsQuerier();
   },
   methods: {
+    sanitize() {
+      this.commentText = '';
+    },
     toggleOverlay() {
       EventBus.$emit(END_CREATE_COMMENT_EVENT);
     },
     async onSubmit(values) {
-      Toast.success('Success');
-
       this.commentQuerier.createComment(values).then((resp) => {
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
         if (resp.StatusOK()) {
+          Toast.success('Success');
           this.toggleOverlay();
           EventBus.$emit(UPDATE_COMMENTS_EVENT);
         }

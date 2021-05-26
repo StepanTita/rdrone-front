@@ -4,7 +4,7 @@ import {err} from "@/services/common/errors";
 import {Response} from "@/services/common/response";
 
 const baseEndpoint = "users";
-const fetchUserEndpoint = "/fetch"
+const fetchUserEndpoint = "/login"
 
 export class UsersQuerier {
     // todo type conversion
@@ -14,7 +14,9 @@ export class UsersQuerier {
 
     // todo use f-strings
     async getUser(credentials) {
-        let resp = await axios.post(config.api + baseEndpoint + fetchUserEndpoint, credentials).catch(err);
+        let resp = await axios.post(config.api + baseEndpoint + fetchUserEndpoint, credentials).catch((e) => {
+
+        });
         return new Response(resp.data, resp.status, resp.statusText);
     }
 

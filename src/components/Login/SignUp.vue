@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import {alphaNum, email, or, required, alpha, maxLength, sameAs, minLength} from "vuelidate/lib/validators";
+import {alpha, alphaNum, email, maxLength, minLength, required, sameAs} from "vuelidate/lib/validators";
 import {EventBus} from "@/services/common/eventBus";
 import {Toast} from "vant";
 import {FirebaseImageUploader} from "@/services/firebase";
@@ -166,42 +166,40 @@ export default {
       // todo: use decorators for loading
       this.showLoading = true;
 
-      const imgUrl = await this.uploadImage(values.username);
-      this.usersQuerier.createUser({
-        avatar: imgUrl,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        username: values.username,
-        email: values.email,
-        password: values.password,
-      }).then((resp) => {
-        if (!resp.StatusOK()) {
-          throw new Error(resp.Status());
-        }
-        Toast.success("Success");
-        EventBus.$emit(SHOW_ALERT_EVENT, resp);
+      this.uploadImage(values.username).then((url) => {
+        this.usersQuerier.createUser({
+          avatar: url,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          username: values.username,
+          email: values.email,
+          password: values.password,
+        }).then((resp) => {
+          if (!resp.StatusOK()) {
+            Promise.reject(resp.Status());
+          }
+          Toast.success("Success");
+          EventBus.$emit(SHOW_ALERT_EVENT, resp);
 
-        this.Success(resp.data);
+          this.Success(resp.data);
+        });
       }).catch(err).finally(() => {
-        this.showLoading = false;
-        this.sanitize();
+        this.resetLoading();
       });
-
     },
     onOversize(file) {
       console.log(file);
       Toast('File size cannot exceed 500kb');
     },
-    async uploadImage(user) {
+    uploadImage(user) {
       if (this.uploader.length < 1) {
         return '';
       }
-      this.uploader[0].status = 'uploading';
-      this.uploader[0].message = 'Uploading...';
-      const imgUrl = await this.firebaseImageUploader.Upload(`${config.firebase_users_path}/${user}`, this.uploader[0].file);
-      this.uploader[0].status = '';
-      this.uploader[0].message = '';
-      return imgUrl;
+      for (let up of this.uploader) {
+        up.status = 'uploading';
+        up.message = 'Uploading...';
+      }
+      return this.firebaseImageUploader.upload(`${config.firebase_users_path}/${user}`, this.uploader[0].file);
     },
     sanitize() {
       this.uploader = [];
@@ -212,6 +210,17 @@ export default {
       this.firstName = '';
       this.lastName = '';
     },
+
+    resetLoading() {
+      this.showLoading = false;
+      if (this.uploader.length > 0) {
+        for (let up of this.uploader) {
+          up.status = '';
+          up.message = '';
+        }
+        this.showLoading = false;
+      }
+    }
   },
 };
 </script>

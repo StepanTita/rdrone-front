@@ -4,9 +4,6 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import firebaseConfig from "@/assets/firebase-config.json";
 import {v4 as uuidv4} from 'uuid';
-import {EventBus} from "@/services/common/eventBus";
-import {SHOW_ALERT_EVENT} from "@/services/common/events";
-import {Response} from "@/services/common/response";
 import {err} from "@/services/common/errors";
 import config from "@/assets/config.json";
 
@@ -18,7 +15,7 @@ export class FirebaseImageUploader {
         }
     }
 
-    Upload(path, img) {
+    upload(path, img) {
         return new Promise((resolve, reject) => {
             const storageRef = firebase.storage().ref(`${path}/${uuidv4() + img.name}`).put(img);
             storageRef.then((snapshot => {

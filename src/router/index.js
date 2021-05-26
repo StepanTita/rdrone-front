@@ -58,7 +58,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     // localStorage.clear();
-    let isAuthenticated = false;
+    let isAuthenticated = false
     isAuthenticated = !!localStorage.getItem(USER_DATA_KEY);
     if (to.name === 'SignUp') {
         next();

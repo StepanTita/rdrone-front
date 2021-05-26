@@ -36,7 +36,8 @@ export default {
 
       newOccasion: null,
 
-      signedIn: false,
+      // todo: return
+      signedIn: true,
     };
   },
   created() {

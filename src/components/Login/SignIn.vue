@@ -80,13 +80,12 @@ export default {
         password: values.password
       }).then((resp) => {
         if (!resp.StatusOK()) {
-          throw new Error(resp.Status());
+          Promise.reject(resp.Status());
         }
         Toast.success("Success");
         EventBus.$emit(SHOW_ALERT_EVENT, resp);
         this.Success(resp.data);
       }).catch(err).finally(() => {
-        console.log("Hello");
         this.showLoading = false;
       });
     }
