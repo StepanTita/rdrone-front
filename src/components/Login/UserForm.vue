@@ -3,7 +3,7 @@
     <van-form @submit="onSubmit">
       <van-field name="avatar" label="Avatar">
         <template #input>
-          <van-uploader v-model="uploader" multiple :max-count="1" :max-size="500 * 1024" @oversize="onOversize"/>
+          <van-uploader v-model="uploader" multiple :max-count="1" :max-size="500 * 1024 * 1024" @oversize="onOversize"/>
         </template>
       </van-field>
 
@@ -168,7 +168,7 @@ export default {
       this.$emit(USER_SUBMIT_EVENT, values);
     },
     onOversize(file) {
-      Toast('File size cannot exceed 500kb');
+      Toast('File size cannot exceed 500Mb');
     },
     uploadImage(user) {
       if (this.uploader.length < 1) {
