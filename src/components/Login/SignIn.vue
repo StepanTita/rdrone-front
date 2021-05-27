@@ -76,8 +76,8 @@ export default {
       this.showLoading = true;
 
       this.usersQuerier.getUser({
-        login: values.login,
-        password: values.password
+        username: this.username,
+        password: this.password
       }).then((resp) => {
         if (!resp.StatusOK()) {
           Promise.reject(resp.Status());

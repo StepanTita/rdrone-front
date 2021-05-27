@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     updateComments() {
-      this.commentQuerier.getComments().then((resp) => {
+      this.commentQuerier.getComments(this.$route.occasion_id).then((resp) => {
         if (!resp.StatusOK()) {
           Promise.reject(resp.Status());
         }

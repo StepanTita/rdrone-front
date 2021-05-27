@@ -53,7 +53,6 @@ export default {
         for (let o of resp.data) {
           this.occasions.push(new Marker(o.id, latLng({lat: o.lat, lng: o.lng}), new OccasionData(o)));
         }
-        this.occasions.push(new Marker(1, latLng({lat: center.lat, lng: center.lng})));
       }).catch(err);
     },
 
